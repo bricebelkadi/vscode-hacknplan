@@ -10,14 +10,39 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:hacknplan.helloWorld"
+		"onCommand:hacknplan.helloWorld",
+		"onCommand:hacknplan.getAllProjects",
+		"onView:hacknplan"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension",
 	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "hacknplan",
+					"title": "Hack N Plan",
+					"icon": "assets/img/rocket.svg"
+				}
+			]
+		},
+		"views": {
+			"hacknplan": [
+				{
+					"id": "hacknplan",
+					"name": "Hack N Plan",
+					"icon": "assets/img/rocket.svg",
+					"contextualTitle": "Hack N Plan extension"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "hacknplan.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "hacknplan.getAllProjects",
+				"title": "Get All Projects"
 			}
 		]
 	},
@@ -42,5 +67,8 @@
 		"vscode-test": "^1.4.0",
 		"webpack": "^4.44.2",
 		"webpack-cli": "^3.3.12"
+	},
+	"dependencies": {
+		"axios": "^0.19.0"
 	}
 }

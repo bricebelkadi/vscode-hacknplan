@@ -1,50 +1,41 @@
+import { AnySrvRecord } from "dns";
 import * as vscode from "vscode";
-import * as path from "path";
+import { Stage } from "../../models/stage.model";
+import BoardService from "../../services/board.service";
 import ProjectService from "../../services/project.service";
-import { Project } from "../../models/project.model";
+import StorageService from "../../services/storage.service";
+import StageService from "../../services/stage.service";
 import TaskService from "../../services/task.service";
 
-export class Projectprovider implements vscode.TreeDataProvider<ProjectItem> {
+export class Projectprovider implements vscode.TreeDataProvider<AnySrvRecord> {
+  private _onDidChangeTreeData: vscode.EventEmitter<
+    void | null
+  > = new vscode.EventEmitter<void | null>();
+  readonly onDidChangeTreeData: vscode.Event<void | null> = this
+    ._onDidChangeTreeData.event;
+
   constructor() {}
 
   getTreeItem(element: any): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: any): Thenable<any[]> {
-    console.log(this.getProjects());
-    return Promise.resolve(this.getProjects());
-  }
-
-  async getProjects() {
-    const array = await ProjectService.getAll();
-    const result = array.map((pro: Project) => {
-       const tasks = this.getTasks(pro.projectId);
-      return new ProjectItem(pro.name, vscode.TreeItemCollapsibleState.Expanded);
-    });
-    return result;
-  }
-
-  async getTasks(id) {
-      const array = await TaskService.getAll(id);
-      const result = array.map()
-  }
-}
-
-class ProjectItem extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
-  ) {
-    super(label, collapsibleState);
-  }
-}
-
-class TaskItems extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
-  ) {
-    super(label, collapsibleState);
+  async getChildren(element?: any): Promise<any[]> {
+    if (element === null || element === undefined) {
+      return await ProjectService.generateProjectTreeItems();
+    } else {
+      if (element.type === "Project" && element.idProject) {
+        await ProjectService.handleStages(element.idProject);
+        return await BoardService.generateBoardTreeItems(element.idProject);
+      }
+      if (element.type === "Board" && element.boardId && element.projectId) {
+        const allStages = StorageService.getAllStages(element.projectId);
+        return StageService.generateStageTreeItems(allStages, element.boardId);
+      }
+      if (element.type = "Stage" && element.boardId && element.stageId) {
+        return await TaskService.generateTaskTreeItemsForStage(element.projectId, element.boardId, element.stageId);
+      }
+      return Promise.resolve([]);
+    }
   }
 }

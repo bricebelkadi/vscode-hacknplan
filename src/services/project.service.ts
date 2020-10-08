@@ -6,11 +6,7 @@ import StorageService from "./storage.service";
 
 export default class ProjectService {
   static async getAll() {
-    const result = await Axios.get("https://api.hacknplan.com/v0/projects", {
-      headers: {
-        Authorization: `ApiKey 516cc2a8dc974d33aa0d0539b582cd89`,
-      },
-    });
+    const result = await Axios.get("https://api.hacknplan.com/v0/projects");
     return result.data;
   }
 

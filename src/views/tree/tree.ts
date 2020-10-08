@@ -6,7 +6,7 @@ import StorageService from "../../services/storage.service";
 import StageService from "../../services/stage.service";
 import TaskService from "../../services/task.service";
 
-export class Projectprovider implements vscode.TreeDataProvider<AnySrvRecord> {
+export class TreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
   private _onDidChangeTreeData: vscode.EventEmitter<
     void | null
   > = new vscode.EventEmitter<void | null>();

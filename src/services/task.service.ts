@@ -41,12 +41,19 @@ export default class TaskService {
   ) {
     const result = await this.getAllForStage(projectId, boardId, stageId);
     const taskTreeItems = result.map((task: Task) => {
-      return new TaskTreeItem(
+      let taskTreeItem = new TaskTreeItem(
         task.title,
         vscode.TreeItemCollapsibleState.Collapsed,
         "Task",
         task.projectId
       );
+      let taskShowCommand: vscode.Command = {
+        title: "Show Task Details",
+        command: "hacknplan.showTask",
+        arguments: [task],
+      };
+      taskTreeItem.command = taskShowCommand;
+      return taskTreeItem;
     });
     return taskTreeItems;
   }

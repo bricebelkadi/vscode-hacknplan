@@ -2,8 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import ProjectService from "./services/project.service";
-import { Projectprovider } from "./views/tree/tree";
+import { TreeProvider } from "./views/tree/tree";
 import Axios, { AxiosRequestConfig } from "axios";
+import ShowTask from "./views/webview/showTask";
+import { Task } from "./models/task.model";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -21,10 +23,24 @@ export async function activate(context: vscode.ExtensionContext) {
     });
   }
 
-  // let test = vscode.commands.registerCommand('hacknplan.getAllProjects', ProjectService.getAll);
-  const projectProvider = new Projectprovider();
+  const showTaskDetailCommand = vscode.commands.registerCommand(
+    "hacknplan.showTask",
+    (task: Task) => {
+      const panel = vscode.window.createWebviewPanel(
+        "showTaskDetail",
+        "Show Task Detail",
+        vscode.ViewColumn.Beside
+      );
+      console.log("arg is ok", task);
+      panel.webview.html = ShowTask.showTaskHTML();
+    }
+  );
+
+  context.subscriptions.push(showTaskDetailCommand);
+
+  const treeProvider = new TreeProvider();
   vscode.window.createTreeView("hacknplan", {
-    treeDataProvider: projectProvider,
+    treeDataProvider: treeProvider,
   });
 
   // context.subscriptions.push(test);

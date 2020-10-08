@@ -52,7 +52,11 @@
 			{
 				"command": "hacknplan.getAllProjects",
 				"title": "Get All Projects"
-			}
+			},
+			{
+				"command": "hacknplan.showTask",
+				"title": "Show Task details"
+			  }
 		]
 	},
 	"scripts": {

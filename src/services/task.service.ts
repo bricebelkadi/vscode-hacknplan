@@ -5,12 +5,7 @@ import * as vscode from "vscode";
 export default class TaskService {
   static async getAll(projectId: number) {
     const result = await Axios.get(
-      `https://api.hacknplan.com/v0/projects/${projectId}/workitems`,
-      {
-        headers: {
-          Authorization: `ApiKey 516cc2a8dc974d33aa0d0539b582cd89`,
-        },
-      }
+      `https://api.hacknplan.com/v0/projects/${projectId}/workitems`
     );
     return result.data.items;
   }
@@ -21,12 +16,7 @@ export default class TaskService {
     stageId: number
   ) {
     const result = await Axios.get(
-      `https://api.hacknplan.com/v0/projects/${projectId}/workitems?boardId=${boardId}&stageId=${stageId}`,
-      {
-        headers: {
-          Authorization: `ApiKey 516cc2a8dc974d33aa0d0539b582cd89`,
-        },
-      }
+      `https://api.hacknplan.com/v0/projects/${projectId}/workitems?boardId=${boardId}&stageId=${stageId}`
     );
     return result.data.items;
   }

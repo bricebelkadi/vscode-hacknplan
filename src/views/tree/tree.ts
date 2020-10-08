@@ -1,6 +1,5 @@
 import { AnySrvRecord } from "dns";
 import * as vscode from "vscode";
-import { Stage } from "../../models/stage.model";
 import BoardService from "../../services/board.service";
 import ProjectService from "../../services/project.service";
 import StorageService from "../../services/storage.service";

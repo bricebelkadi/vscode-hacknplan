@@ -16,6 +16,15 @@
 	],
 	"main": "./dist/extension",
 	"contributes": {
+		"configuration": {
+			"title" : "Hack'N'Plan",
+			"properties": {
+				"hacknplan.apiKey" : {
+					"type": "string",
+					"default": "516cc2a8dc974d33aa0d0539b582cd89"
+				}
+			}
+		},	
 		"viewsContainers": {
 			"activitybar": [
 				{

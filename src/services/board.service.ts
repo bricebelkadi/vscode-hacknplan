@@ -5,12 +5,7 @@ import { Board, BoardTreeItem } from "../models/board.model";
 export default class BoardService {
   static async getAll(projectId: number) {
     const result = await Axios.get(
-      `https://api.hacknplan.com/v0/projects/${projectId}/boards`,
-      {
-        headers: {
-          Authorization: `ApiKey 516cc2a8dc974d33aa0d0539b582cd89`,
-        },
-      }
+      `https://api.hacknplan.com/v0/projects/${projectId}/boards`
     );
     return result.data;
   }

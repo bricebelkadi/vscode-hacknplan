@@ -40,7 +40,7 @@ export class TaskTreeItem extends vscode.TreeItem {
       public readonly label: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly type : ModelType,
-      public readonly idTask : number
+      public readonly idTask : number,
     ) {
       super(label, collapsibleState);
     }

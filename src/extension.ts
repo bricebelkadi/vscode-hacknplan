@@ -6,6 +6,7 @@ import { TreeProvider } from "./views/tree/tree";
 import Axios, { AxiosRequestConfig } from "axios";
 import ShowTask from "./views/webview/showTask";
 import { Task } from "./models/task.model";
+import ImportanceLevelService from "./services/importanceLevel.service";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -25,14 +26,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const showTaskDetailCommand = vscode.commands.registerCommand(
     "hacknplan.showTask",
-    (task: Task) => {
+    async (task: Task) => {
       const panel = vscode.window.createWebviewPanel(
         "showTaskDetail",
         "Show Task Detail",
-        vscode.ViewColumn.Beside
+        vscode.ViewColumn.Beside,
+        { enableScripts: true }
       );
       console.log("arg is ok", task);
-      panel.webview.html = ShowTask.showTaskHTML();
+      panel.webview.html = await ShowTask.showTaskHTML(task);
+
+      // handle patch of task
+      panel.webview.onDidReceiveMessage((task: any) => {
+        return null;
+      });
     }
   );
 
@@ -42,23 +49,6 @@ export async function activate(context: vscode.ExtensionContext) {
   vscode.window.createTreeView("hacknplan", {
     treeDataProvider: treeProvider,
   });
-
-  // context.subscriptions.push(test);
-
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
-    "hacknplan.helloWorld",
-    () => {
-      // The code you place here will be executed every time your command is executed
-
-      // Display a message box to the user
-      vscode.window.showInformationMessage("Hello World from HackNPlan!");
-    }
-  );
-
-  context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated

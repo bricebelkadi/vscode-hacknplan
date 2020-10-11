@@ -5,6 +5,7 @@ import ProjectService from "../../services/project.service";
 import StorageService from "../../services/storage.service";
 import StageService from "../../services/stage.service";
 import TaskService from "../../services/task.service";
+import ImportanceLevelService from "../../services/importanceLevel.service";
 
 export class TreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
   private _onDidChangeTreeData: vscode.EventEmitter<
@@ -23,9 +24,11 @@ export class TreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
     if (element === null || element === undefined) {
       return await ProjectService.generateProjectTreeItems();
     } else {
-      if (element.type === "Project" && element.idProject) {
-        await ProjectService.handleStages(element.idProject);
-        return await BoardService.generateBoardTreeItems(element.idProject);
+      if (element.type === "Project" && element.projectId) {
+        ImportanceLevelService.getAndStore(element.projectId)
+
+        await ProjectService.handleStages(element.projectId);
+        return await BoardService.generateBoardTreeItems(element.projectId);
       }
       if (element.type === "Board" && element.boardId && element.projectId) {
         const allStages = StorageService.getAllStages(element.projectId);

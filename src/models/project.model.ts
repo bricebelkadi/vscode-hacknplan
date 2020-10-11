@@ -30,7 +30,7 @@ export class ProjectTreeItem extends vscode.TreeItem {
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly type : ModelType,
-    public readonly idProject : number
+    public readonly projectId : number
   ) {
     super(label, collapsibleState);
   }

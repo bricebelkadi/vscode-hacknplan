@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { Task, TaskTreeItem } from "../models/task.model";
+import { SubTask, Task, TaskTreeItem } from "../models/task.model";
 import * as vscode from "vscode";
 
 export default class TaskService {
@@ -9,6 +9,15 @@ export default class TaskService {
     );
     return result.data.items;
   }
+
+  static async getSubtaks(projectId: number, taskId: number) {
+    const result = await Axios.get(
+      `https://api.hacknplan.com/v0/projects/${projectId}/workitems/${taskId}/subtasks`
+    );
+    console.log("result subtask", result)
+    return result.data as SubTask[];
+  }
+
 
   static async getAllForStage(
     projectId: number,

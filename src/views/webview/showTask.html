@@ -133,6 +133,7 @@
     </div>
     <script>
       const task = {
+        taskId: "${task.taskId}",
         title: "${task.title}",
         importanceLevel: "${task.importanceValue.importanceValueId}",
         estimatedCost: "${task.estimatedCost}",
@@ -150,6 +151,14 @@
           },
         ],
       };
+
+      function createNewSubTask(subTask) {
+        vscode.postMessage({
+          command: "createNewSubTask",
+          taskId: task.taskId,
+          subTask
+        })
+      }
 
       function handleEstimatedCostFromInput(e) {
         const match = e.target.value.match(/(\d+)h?(?:\s(\d+)(?:m)?)?/);
@@ -235,6 +244,7 @@
           );
           task.subtasks[index].title = e.target.value;
           newSpan.innerHTML = e.target.value;
+          if (e.target.getAttribute('data-subTaskId') === "0") createNewSubTask(task.subtasks[index])
         } else {
           task[e.target.name] = e.target.value;
           newSpan.innerHTML = e.target.value;
@@ -271,9 +281,9 @@
 
       document.getElementById('addTask').addEventListener('click', () => {
         let newSubtask = {
-          isCompleted: false,
+          subTaskId: 0,
           title: "",
-          subTaskId: 0
+          isCompleted: false
         };
         task.subtasks.push(newSubtask);
         let div = document.createElement("div");

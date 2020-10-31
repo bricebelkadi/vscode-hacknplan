@@ -30,6 +30,7 @@ export default class ShowTask {
             data-name="title"
             >${subTask.title}</span>
         </span>
+        <span data-delete data-subTaskId="${subTask.subTaskId}" > XXX </span>
       </div>
       `;
     });
@@ -71,22 +72,28 @@ export default class ShowTask {
       </head>
       <style>
         body {
-          width: 100%;
+          width: 95%;
           height: 100%;
           display: flex;
           flex-direction: column;
+
         }
         .main-container {
           width: 100%;
           height: 100%;
           display: flex;
           flex-direction: column;
-          padding: 10px;
+          padding: 20px;
+          margin: 20px;
+          box-shadow: 0 1px 6px rgba(25,25,25,.8);
+          background-color: #454545;
+          border-radius: 3px;
         }
         .element {
           display: flex;
           width: 100%;
           justify-content: center;
+          padding:5px;
         }
         .col {
           flex-direction: column;
@@ -96,11 +103,28 @@ export default class ShowTask {
         }
         .title {
           justify-content: flex-start;
-          font-size: large;
+          font-size: xx-large;
+          padding-bottom: 10px;
         }
         .sub-task {
-          box-shadow: 1px solid blue;
           justify-content: flex-start;
+          padding: 7px;
+          border-radius: 3px;
+          color: rgb(221, 221, 221);
+          box-shadow: rgba(25, 25, 25, 0.8) 0px 1px 6px 0px;
+          margin-bottom: 10px;
+        }
+        #subtasks {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        span[data-delete] {
+          margin-left: auto;
+        }
+        input[type="checkbox"] {
+          margin-right : 2px;
+          margin-left : 2px;
         }
         .parent-switch {
           width: auto;
@@ -111,6 +135,10 @@ export default class ShowTask {
         }
         textarea {
           width: 100%;
+        }
+        subtitle {
+          font-size: large;
+          padding-bottom: 5px;
         }
       </style>
       <body>
@@ -160,7 +188,33 @@ export default class ShowTask {
           </div>
         </div>
         <script>
+          const vscode = acquireVsCodeApi();
+        
+          function updateNewSubtask(subtask) {
+            let index = task.subtasks.findIndex(subtask => subtask.subTaskId === "0");
+            task.subtasks[index].subTaskId = subtask.subTaskId.toString();
+            let elems = document.querySelectorAll('[data-subtaskid="0"]')
+            elems.map(x => x.setAttribute("data-subTaskId", subtask.subTaskId.toString()))
+            console.log(task)
+          }
+
+          function updateTask() {
+            vscode.postMessage({
+              command: "updateTask",
+              params: {
+                projectId: task.projectId,
+                taskId: task.taskId,
+                title : task.title,
+                importanceLevel: task.importanceLevel,
+                estimatedCost: task.estimatedCost,
+                description: task.description
+              }
+            })
+          }      
+                        
+
           const task = {
+            projectId: "${task.projectId}",
             taskId: "${task.workItemId}",
             title: "${task.title.length ? task.title : "Not defined"}",
             importanceLevel: "${task.importanceLevel.importanceLevelId}",
@@ -170,22 +224,53 @@ export default class ShowTask {
             }",
             subtasks: [${this.generateSubtasksJS(subtasks)}],
           };
+
+          function updateSubtask(subTask) {
+            let index = task.subtasks.findIndex(sb => sb.subTaskId === subTask.subTaskId);
+            vscode.postMessage({
+                command: "updateSubTask",
+                params: {
+                  projectId: task.projectId,
+                  taskId: task.taskId,
+                  subTask
+                }
+              })
+          }
+      
     
           function createNewSubTask(subTask) {
             vscode.postMessage({
               command: "createNewSubTask",
-              taskId: task.taskId,
-              subTask
+              params: {
+                projectId: task.projectId,
+                taskId: task.taskId,
+                subTask
+              }
             })
           }
-    
+
+          function deleteSubtask(e) {
+            let subTaskId = e.target.getAttribute('data-subTaskId');
+            if (!subTaskId) return;
+            let index = task.subtasks.findIndex(x => x.subTaskId === subTaskId);
+            vscode.postMessage({
+                    command: "deleteSubTask",
+                    params: {
+                      projectId: task.projectId,
+                      taskId: task.taskId,
+                      subTask: task.subtasks[index]
+                    }
+                  })
+            task.subtasks.splice(index, 1);
+            e.target.parentElement.remove();
+          }
+        
+            
           function handleEstimatedCostFromInput(e) {
             const match = e.target.value.match(/(\\d+)h?(?:\\s(\\d+)(?:m)?)?/);
             let value = 0;
             let h = 0;
             let m = 0;
-            console.log(e)
-            console.log(match);
             if (match) {
               value = parseInt(match[1], 10);
               if (parseInt(match[2], 10) < 61) {
@@ -212,7 +297,6 @@ export default class ShowTask {
           }
     
           function spanToInput(e) {
-            console.log("e", e);
             let isTextarea = e.target.getAttribute("data-type") === "textarea";
             let input = isTextarea
               ? document.createElement("textarea")
@@ -238,7 +322,6 @@ export default class ShowTask {
           }
     
           function inputToSpan(e) {
-            console.log(e);
             let isTextarea = e.target.tagName === "TEXTAREA";
             let newSpan = document.createElement("span");
             newSpan.setAttribute("data-switch", "");
@@ -258,16 +341,20 @@ export default class ShowTask {
               let result = handleEstimatedCostFromInput(e);
               task[e.target.name] = result.value;
               newSpan.innerHTML = result.text;
+              updateTask();
             } else if (e.target.getAttribute("data-subTaskId")) {
+              let subtaskId = e.target.getAttribute("data-subTaskId");
               let index = task.subtasks.findIndex(
-                (x) => x.subTaskId === e.target.getAttribute("data-subTaskId")
+                (x) => x.subTaskId === subtaskId
               );
-              task.subtasks[index].title = e.target.value;
-              newSpan.innerHTML =  e.target.value.length > 0 ? e.target.length : "Not defined";
+              if (index > -1) task.subtasks[index].title = e.target.value;
+              newSpan.innerHTML =  e.target.value.length > 0 ? e.target.value : "Not defined";
               if (e.target.getAttribute('data-subTaskId') === "0") createNewSubTask(task.subtasks[index])
+              else updateSubtask(task.subtasks[index])
             } else {
               task[e.target.name] = e.target.value;
-              newSpan.innerHTML =  e.target.value.length > 0 ? e.target.length : "Not defined";
+              newSpan.innerHTML =  e.target.value.length > 0 ? e.target.value : "Not defined";
+              updateTask();
             }
             console.log("task", task);
             let parentElement = e.target.parentElement;
@@ -276,55 +363,83 @@ export default class ShowTask {
             newSpan.addEventListener("click", spanToInput);
           }
     
-          let switchInputs = document.querySelectorAll("span[data-switch]");
-          [...switchInputs].map((span) => {
-            span.addEventListener("click", spanToInput);
-          });
-    
-          document.querySelector("select").addEventListener("change", (e) => {
-            task.importanceLevel = e.target.value;
-            console.log(task);
-          });
-    
-          let checkboxSubtasks = document.querySelectorAll(
-            "input[type='checkbox']"
-          );
-          [...checkboxSubtasks].map((checkbox) =>
-            checkbox.addEventListener("change", (e) => {
-              console.log(e);
-              let id = e.target.getAttribute("data-subTaskId");
-              let index = task.subtasks.findIndex((x) => x.subTaskId === id);
-              task.subtasks[index].isCompleted = e.target.checked;
-              console.log(task)
+
+          function handleIsCompleted (e) {
+            let id = e.target.getAttribute("data-subTaskId");
+            let index = task.subtasks.findIndex((x) => x.subTaskId === id);
+            task.subtasks[index].isCompleted = e.target.checked;
+            updateSubtask(task.subtasks[index])
+            console.log(task)
+          }
+
+          document.addEventListener("DOMContentLoaded", () => {
+  
+            window.addEventListener('message', message => {
+              switch(message.data.command) {
+                case "createNewSubTaskResponse":
+                  updateNewSubtask(message.data.params.newSubTask)
+              }
             })
-          );
+  
+            let switchInputs = document.querySelectorAll("span[data-switch]");
+            [...switchInputs].map((span) => {
+              span.addEventListener("click", spanToInput);
+            });
+      
+            document.querySelector("select").addEventListener("change", (e) => {
+              task.importanceLevel = e.target.value;
+              updateTask();
+            });
+
+            let checkboxSubtasks = document.querySelectorAll(
+              "input[type='checkbox']"
+            );
+            [...checkboxSubtasks].map((checkbox) =>
+              checkbox.addEventListener("change", handleIsCompleted)
+            );
+      
+            document.getElementById('addTask').addEventListener('click', () => {
+              let newSubtask = {
+                subTaskId: "0",
+                title: "",
+                isCompleted: false
+              };
+              task.subtasks.push(newSubtask);
+              let div = document.createElement("div");
+              div.setAttribute("class", "element sub-task");
+              let checkbox = document.createElement("input");
+              checkbox.setAttribute("type", "checkbox");
+              checkbox.setAttribute("name", "isCompleted");
+              checkbox.setAttribute('data-subTaskId', "0");
+              div.appendChild(checkbox);
+              let parentSwitch = document.createElement('span');
+              parentSwitch.setAttribute("class", "parent-switch");
+              let input = document.createElement("input");
+              input.setAttribute("type", "text");
+              input.setAttribute('data-subTaskId', '0');
+              input.setAttribute('name', "title");
+              parentSwitch.appendChild(input);
+              div.appendChild(parentSwitch);
+              let spanDelete = document.createElement('span');
+              spanDelete.setAttribute('data-subTaskId', "0");
+              spanDelete.setAttribute('data-delete', "true");
+              div.appendChild(spanDelete);
+              document.getElementById("subtasks").prepend(div);
+              input.focus();
+              input.addEventListener("blur", inputToSpan);
+              spanDelete.addEventListener('click', deleteSubtask);
+              checkbox.addEventListener('change', handleIsCompleted)
+                })
+
+                let deleteSubTasks = document.querySelectorAll("span[data-delete][data-subtaskid]");
+                [...deleteSubTasks].map(x => {
+                  addEventListener('click', deleteSubtask)
+                });
     
-          document.getElementById('addTask').addEventListener('click', () => {
-            let newSubtask = {
-              subTaskId: 0,
-              title: "",
-              isCompleted: false
-            };
-            task.subtasks.push(newSubtask);
-            let div = document.createElement("div");
-            div.setAttribute("class", "element sub-task");
-            let checkbox = document.createElement("input");
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.setAttribute("name", "isCompleted");
-            checkbox.setAttribute('data-subTaskId', "0");
-            div.appendChild(checkbox);
-            let parentSwitch = document.createElement('span');
-            parentSwitch.setAttribute("class", "parent-switch");
-            let input = document.createElement("input");
-            input.setAttribute("type", "text");
-            input.setAttribute('data-subTaskId', '0');
-            input.setAttribute('name', "title");
-            parentSwitch.appendChild(input);
-            div.appendChild(parentSwitch)
-            document.getElementById("subtasks").prepend(div);
-            input.focus();
-            input.addEventListener("blur", inputToSpan);
-          })
+    
+          });
+
+    
         </script>
       </body>
     </html>

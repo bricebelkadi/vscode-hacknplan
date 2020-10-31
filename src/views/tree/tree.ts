@@ -25,9 +25,9 @@ export class TreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
       return await ProjectService.generateProjectTreeItems();
     } else {
       if (element.type === "Project" && element.projectId) {
-        ImportanceLevelService.getAndStore(element.projectId)
+        ImportanceLevelService.getAndStore(element.projectId);
 
-        await ProjectService.handleStages(element.projectId);
+        await StageService.getAndStore(element.projectId);
         return await BoardService.generateBoardTreeItems(element.projectId);
       }
       if (element.type === "Board" && element.boardId && element.projectId) {

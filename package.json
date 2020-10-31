@@ -10,21 +10,21 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:hacknplan.helloWorld",
-		"onCommand:hacknplan.getAllProjects",
-		"onView:hacknplan"
+		"onView:hacknplanProjects",
+		"onView:hacknplanBoards",
+		"onView:hacknplanTasks"
 	],
 	"main": "./dist/extension",
 	"contributes": {
 		"configuration": {
-			"title" : "Hack'N'Plan",
+			"title": "Hack'N'Plan",
 			"properties": {
-				"hacknplan.apiKey" : {
+				"hacknplan.apiKey": {
 					"type": "string",
 					"default": "516cc2a8dc974d33aa0d0539b582cd89"
 				}
 			}
-		},	
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{
@@ -37,8 +37,20 @@
 		"views": {
 			"hacknplan": [
 				{
-					"id": "hacknplan",
-					"name": "Hack N Plan",
+					"id": "hacknplanProjects",
+					"name": "Projects",
+					"icon": "assets/img/rocket.svg",
+					"contextualTitle": "Hack N Plan extension"
+				},
+				{
+					"id": "hacknplanBoards",
+					"name": "Boards",
+					"icon": "assets/img/rocket.svg",
+					"contextualTitle": "Hack N Plan extension"
+				},
+				{
+					"id": "hacknplanTasks",
+					"name": "Tasks",
 					"icon": "assets/img/rocket.svg",
 					"contextualTitle": "Hack N Plan extension"
 				}
@@ -56,7 +68,15 @@
 			{
 				"command": "hacknplan.showTask",
 				"title": "Show Task details"
-			  }
+			},
+			{
+				"command": "hacknplan.currentProject",
+				"title": "Define Current Project"
+			},
+			{
+				"command": "hacknplan.currentBoard",
+				"title": "Define Current Board"
+			}
 		]
 	},
 	"scripts": {

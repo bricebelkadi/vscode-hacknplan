@@ -13,17 +13,20 @@ export default class ProjectService {
   static async generateProjectTreeItems () {
     const result = await this.getAll();
     const projectTreeItems = result.map((pro: Project) => {
-      return new ProjectTreeItem(
+      let projectTreeItem = new ProjectTreeItem(
         pro.name,
         vscode.TreeItemCollapsibleState.Expanded,
         "Project",
         pro.id
       );
+      let projectTreeItemCommand: vscode.Command = {
+        title: "Define Current Project",
+        command: "hacknplan.currentProject",
+        arguments: [pro.id]
+      };
+      projectTreeItem.command = projectTreeItemCommand;
+      return projectTreeItem;
     });
     return projectTreeItems;
-  }
-
-  static async handleStages(projectId: number) {
-    await StageService.storeStages(projectId);
   }
 }

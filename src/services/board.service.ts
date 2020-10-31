@@ -13,13 +13,21 @@ export default class BoardService {
   static async generateBoardTreeItems(projectId: number) {
     const result = await this.getAll(projectId);
     const boardTreeItems = result.map((board: Board) => {
-      return new BoardTreeItem(
+      let boardItem = new BoardTreeItem(
         board.name,
         vscode.TreeItemCollapsibleState.Expanded,
         "Board",
         board.boardId,
         projectId
       );
+      let boardTreeItemCommand: vscode.Command = {
+        title: "Define Current Board",
+        command: "hacknplan.currentBoard",
+        arguments: [board.boardId]
+      };
+      boardItem.command = boardTreeItemCommand;
+      return boardItem;
+
     });
     return boardTreeItems;
   }

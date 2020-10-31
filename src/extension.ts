@@ -1,12 +1,16 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
-import ProjectService from "./services/project.service";
-import { TreeProvider } from "./views/tree/tree";
 import Axios, { AxiosRequestConfig } from "axios";
-import ShowTask from "./views/webview/showTask";
+import * as vscode from "vscode";
 import { Task } from "./models/task.model";
-import ImportanceLevelService from "./services/importanceLevel.service";
+import TaskService from "./services/task.service";
+import { MainTreeContainer } from "./views/tree/main.tree";
+import ShowTask from "./views/webview/showTask";
+
+interface IMessageTask {
+  command: string;
+  params: any;
+}
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -33,22 +37,35 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.ViewColumn.Beside,
         { enableScripts: true }
       );
-      console.log("arg is ok", task);
       panel.webview.html = await ShowTask.showTaskHTML(task);
 
       // handle patch of task
-      panel.webview.onDidReceiveMessage((task: any) => {
-        return null;
+      panel.webview.onDidReceiveMessage(async (message: IMessageTask) => {
+        switch (message.command) {
+          case "createNewSubTask":
+            const newSubTask = await TaskService.createNewSubTask(
+              message.params
+            );
+            return panel.webview.postMessage({
+              command: "createNewSubTaskResponse",
+              params: {
+                newSubTask,
+              },
+            });
+          case "updateSubTask":
+            return await TaskService.updateSubTask(message.params);
+          case "deleteSubTask":
+            return await TaskService.deleteSubTask(message.params);
+          case "updateTask":
+            return await TaskService.updateTask(message.params);
+        }
       });
     }
   );
 
   context.subscriptions.push(showTaskDetailCommand);
 
-  const treeProvider = new TreeProvider();
-  vscode.window.createTreeView("hacknplan", {
-    treeDataProvider: treeProvider,
-  });
+  new MainTreeContainer();
 }
 
 // this method is called when your extension is deactivated

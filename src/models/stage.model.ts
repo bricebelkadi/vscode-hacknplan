@@ -15,6 +15,7 @@ export class Stage {
   status!: string;
   isUnblocker!: boolean;
   creationDate!: Date;
+  isOpened?: boolean;
 }
 
 export class StageTreeItem extends vscode.TreeItem {

@@ -30,19 +30,6 @@ export default class TaskService {
     return result.data.items;
   }
 
-  static async generateTaskTreeItems(projectId: number) {
-    const result = await this.getAll(projectId);
-    const taskTreeItems = result.map((task: Task) => {
-      return new TaskTreeItem(
-        task.title,
-        vscode.TreeItemCollapsibleState.Collapsed,
-        "Task",
-        task.projectId
-      );
-    });
-    return taskTreeItems;
-  }
-
   static async generateTaskTreeItemsForStage(
     projectId: number,
     boardId: number,
@@ -50,19 +37,7 @@ export default class TaskService {
   ) {
     const result = await this.getAllForStage(projectId, boardId, stageId);
     const taskTreeItems: TaskTreeItem[] = result.map((task: Task) => {
-      let taskTreeItem = new TaskTreeItem(
-        task.title,
-        vscode.TreeItemCollapsibleState.Collapsed,
-        "Task",
-        task.projectId
-      );
-      let taskShowCommand: vscode.Command = {
-        title: "Show Task Details",
-        command: "hacknplan.showTask",
-        arguments: [task],
-      };
-      taskTreeItem.command = taskShowCommand;
-      return taskTreeItem;
+      return this.generateTaskTreeItem(task);
     });
     StorageService.updateStageInTaskTree(stageId, taskTreeItems);
     return taskTreeItems;
@@ -119,7 +94,7 @@ export default class TaskService {
   }) {
     let taskToPatch = {
       title: params.title,
-      importanceLevelId: parseInt(params.importanceLevel,10),
+      importanceLevelId: parseInt(params.importanceLevel, 10),
       description: params.description,
       estimatedCost: params.estimatedCost,
     };
@@ -128,6 +103,42 @@ export default class TaskService {
       taskToPatch,
       { headers: { "Content-Type": "application/json" } }
     );
-    return result.data;
+    let task = result.data as Task;
+    let taskItem = TaskService.generateTaskTreeItem(result.data);
+    StorageService.updateTask(task.stage.stageId, taskItem);
+  }
+
+  static async createNewTask() {
+    const boardId = StorageService.getBoardId();
+    const projectId = StorageService.getProjectId();
+    const obj = {
+      title: "New Task",
+      isStory: false,
+      estimatedCost: 0,
+      importanceLevelId: 3,
+      boardId,
+    };
+    const result = await Axios.post(
+      `https://api.hacknplan.com/v0/projects/${projectId}/workitems`,
+      obj,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return result.data as Task;
+  }
+
+  static generateTaskTreeItem(task: Task) {
+    const taskTreeItem = new TaskTreeItem(
+      task.title,
+      vscode.TreeItemCollapsibleState.Collapsed,
+      "Task",
+      task.workItemId
+    );
+    let taskShowCommand: vscode.Command = {
+      title: "Show Task Details",
+      command: "hacknplan.showTask",
+      arguments: [task],
+    };
+    taskTreeItem.command = taskShowCommand;
+    return taskTreeItem;
   }
 }

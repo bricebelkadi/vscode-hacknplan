@@ -28,6 +28,8 @@ export async function activate(context: vscode.ExtensionContext) {
     });
   }
 
+  const mainTree = new MainTreeContainer();
+
   const showTaskDetailCommand = vscode.commands.registerCommand(
     "hacknplan.showTask",
     async (task: Task) => {
@@ -57,7 +59,8 @@ export async function activate(context: vscode.ExtensionContext) {
           case "deleteSubTask":
             return await TaskService.deleteSubTask(message.params);
           case "updateTask":
-            return await TaskService.updateTask(message.params);
+            await TaskService.updateTask(message.params);
+            return mainTree.taskTreeProvider.refresh();
         }
       });
     }
@@ -65,7 +68,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(showTaskDetailCommand);
 
-  new MainTreeContainer();
 }
 
 // this method is called when your extension is deactivated

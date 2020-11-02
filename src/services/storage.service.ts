@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { TreeItemCollapsibleState } from "vscode";
 import { ITaskTree } from "../models/core.model";
 import ImportanceLevel from "../models/importanceLevel.model";
 import { Stage, StageTreeItem } from "../models/stage.model";
@@ -31,8 +32,7 @@ class StorageSingleton {
   addToAllStages(obj: IAllStages) {
     let index = this.allStages.findIndex((x : IAllStages) => x.projectId === obj.projectId);
     if (index > -1) {
-      this.allImportanceLevels.splice(index, 1);
-      return this.allStages.push(obj);
+      return this.allStages.splice(index, 1, obj);
     } else {
       return this.allStages.push(obj);
     }
@@ -55,8 +55,7 @@ class StorageSingleton {
   addToAllImportanceLevel(obj: IAllImportanceLevel) {
     let index = this.allImportanceLevels.findIndex((x : IAllImportanceLevel) => x.projectId === obj.projectId);
     if (index > -1) {
-      this.allImportanceLevels.splice(index, 1);
-      return this.allImportanceLevels.push(obj);
+      return this.allImportanceLevels.splice(index, 1, obj);
     } else {
       return this.allImportanceLevels.push(obj);
     }
@@ -139,8 +138,11 @@ class StorageSingleton {
     if (index > -1) {
       this.taskTree[index].tasks = obj;
     } else {
-      console.log("Stage not founded, sorry");
     }
+  }
+
+  pushNewTaskInFirstStage(task: TaskTreeItem) {
+    this.taskTree[0].tasks.push(task);
   }
 
   getTaskTreeStages() {
@@ -157,13 +159,20 @@ class StorageSingleton {
     }
   }
 
-  updateCollapseState(stageId: number, state: boolean) {
+  updateCollapseState(stageId: number, state: TreeItemCollapsibleState) {
     let index = this.taskTree.findIndex(x => x.stage.stageId === stageId);
     if (index > -1) {
-      let old = this.taskTree[index].stage;
+      let newStage = new StageTreeItem(
+        this.taskTree[index].stage.label,
+        state,
+        "Stage",
+        this.taskTree[index].stage.boardId,
+        this.taskTree[index].stage.projectId,
+        this.taskTree[index].stage.stageId
+      );
+      this.taskTree[index].stage;
       let newTaskItem: ITaskTree = {
-        isOpened: state,
-        stage: old,
+        stage: newStage,
         tasks : this.taskTree[index].tasks
       };
       this.taskTree.splice(index, 1, newTaskItem);
@@ -171,7 +180,17 @@ class StorageSingleton {
   }
 
   resetTaskTree() {
-    this.taskTree.splice(0, this.taskTree.length-1);
+    this.taskTree.splice(0, this.taskTree.length);
+  }
+
+  updateTask(stageId:number, task: TaskTreeItem) {
+    let indexStage = this.taskTree.findIndex(x => x.stage.stageId === stageId);
+    if (indexStage > -1) {
+      let indexTask = this.taskTree[indexStage].tasks.findIndex(x => x.idTask === task.idTask);
+      if (indexTask > -1) {
+        this.taskTree[indexStage].tasks.splice(indexTask, 1, task);
+      }
+    }
   }
 }
 

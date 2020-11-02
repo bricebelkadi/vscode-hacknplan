@@ -28,28 +28,32 @@ export default class StageService {
     let currentTaskTree: ITaskTree [] = [];
     stageTreeItems.map((x: StageTreeItem) => {
       let taskTree : ITaskTree = {
-        isOpened: x.collapsibleState === vscode.TreeItemCollapsibleState.Expanded ? true : false,
         stage: x,
         tasks: []
       };
       currentTaskTree.push(taskTree);
-      StorageService.updateTaskTree(currentTaskTree);
     });
-
+    StorageService.updateTaskTree(currentTaskTree);    
     return stageTreeItems;
   }
 
 
 
-  static async getAndStore(projectId: number) {
-    const result = await this.getAll(projectId);
-    result.map(x => {
-      if(result[0].stageId === x.stageId) {
-        return x.isOpened = true;
-      } else {
-        return x.isOpened = false;
-      }
-    });
-    StorageService.addToAllStages({ projectId: projectId, stages: result });
+  static async getAndStore(projectId: number, reset?: boolean) {
+    const storedStages = StorageService.getAllStages(projectId);
+    if (!reset && storedStages.length > 0) {
+      return;
+    } else {
+
+      const result = await this.getAll(projectId);
+      result.map(x => {
+        if(result[0].stageId === x.stageId) {
+          return x.isOpened = true;
+        } else {
+          return x.isOpened = false;
+        }
+      });
+      StorageService.addToAllStages({ projectId: projectId, stages: result });
+    }
   }
 }

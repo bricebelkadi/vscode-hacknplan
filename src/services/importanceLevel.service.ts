@@ -10,11 +10,18 @@ export default class ImportanceLevelService {
     return result.data as ImportanceLevel[];
   }
 
-  static async getAndStore(projectId: number) {
-    const result = await this.getAll(projectId);
-    StorageService.addToAllImportanceLevel({
-      projectId,
-      importanceLevel: result,
-    });
+  static async getAndStore(projectId: number, reset?: boolean) {
+    const currentImportanceLevel = StorageService.getAllImportanceLevel(
+      projectId
+    );
+    if (!reset && currentImportanceLevel.length > 0) {
+      return;
+    } else {
+      const result = await this.getAll(projectId);
+      return StorageService.addToAllImportanceLevel({
+        projectId,
+        importanceLevel: result,
+      });
+    }
   }
 }

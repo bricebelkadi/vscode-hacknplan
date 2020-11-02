@@ -4,40 +4,48 @@ import { BoardTreeProvider } from "./board.tree";
 import StorageService from "../../services/storage.service";
 import { TaskTreeProvider } from "./task.tree";
 import TaskService from "../../services/task.service";
+import ImportanceLevelService from "../../services/importanceLevel.service";
+import StageService from "../../services/stage.service";
+import { Task, TaskTreeItem } from "../../models/task.model";
 
 export class MainTreeContainer {
+  projectTreeProvider: ProjectTreeProvider;
+  projectTree : vscode.TreeView<ProjectTreeProvider>;
+
+  boardTreeProvider : BoardTreeProvider;
+  boardTree : vscode.TreeView<BoardTreeProvider>;
+
+  taskTreeProvider: TaskTreeProvider;
+  taskTree : vscode.TreeView<TaskTreeProvider>;
   constructor() {
-    const projectTreeProvider = new ProjectTreeProvider();
-    vscode.window.createTreeView("hacknplanProjects", {
-      treeDataProvider: projectTreeProvider,
+    this.projectTreeProvider = new ProjectTreeProvider();
+    this.projectTree = vscode.window.createTreeView("hacknplanProjects", {
+      treeDataProvider: this.projectTreeProvider,
     });
 
-    const boardTreeProvider = new BoardTreeProvider();
-    vscode.window.createTreeView("hacknplanBoards", {
-      treeDataProvider: boardTreeProvider,
+    this.boardTreeProvider = new BoardTreeProvider();
+    this.boardTree = vscode.window.createTreeView("hacknplanBoards", {
+      treeDataProvider: this.boardTreeProvider,
     });
 
-    const taskTreeProvider = new TaskTreeProvider();
-    const taskView = vscode.window.createTreeView("hacknplanTasks", {
-      treeDataProvider: taskTreeProvider
+    this.taskTreeProvider = new TaskTreeProvider();
+    this.taskTree = vscode.window.createTreeView("hacknplanTasks", {
+      treeDataProvider: this.taskTreeProvider
     });
 
-    taskView.onDidExpandElement(async (e) => {
-      // StorageService.updateCollapseState(e.element.stageId, true);
-      // const taskTreeItems = await TaskService.generateTaskTreeItemsForStage(e.element.projectId, e.element.boardId, e.element.stageId);
-      // StorageService.updateStageInTaskTree(e.element.stageId, taskTreeItems);
-      // return taskTreeProvider.refresh();
-    });
+    // taskTree.onDidExpandElement((x) => StorageService.updateCollapseState(x.element.stageId, vscode.TreeItemCollapsibleState.Expanded));
+    // taskTree.onDidCollapseElement((x) => StorageService.updateCollapseState(x.element.stageId, vscode.TreeItemCollapsibleState.Collapsed));
 
     vscode.commands.registerCommand(
       "hacknplan.currentProject",
-      (projectId: number) => {
-        taskView.reveal(this, {select: false, expand: false});
+      async (projectId: number) => {
         StorageService.resetTaskTree();
         StorageService.storeProjectId(projectId);
         StorageService.eraseBoardId();
-        taskTreeProvider.refresh();
-        return boardTreeProvider.refresh();
+        await ImportanceLevelService.getAndStore(projectId);
+        await StageService.getAndStore(projectId);
+        this.taskTreeProvider.refresh();
+        return this.boardTreeProvider.refresh();
       }
     );
 
@@ -49,11 +57,22 @@ export class MainTreeContainer {
         let projectId = StorageService.getProjectId();
         if (projectId) {
           StorageService.getAllStages(projectId);
-          return taskTreeProvider.refresh();
+          return this.taskTreeProvider.refresh();
         }
         else {
           return console.log("current project id not defined, in command currentBoard");
         }
+      }
+    );
+
+    vscode.commands.registerCommand(
+      "hackplan.createNewTask",
+      async () => {
+        const newTask = await TaskService.createNewTask();
+        vscode.commands.executeCommand("hacknplan.showTask", newTask);
+        let taskTreeItem = TaskService.generateTaskTreeItem(newTask);
+        StorageService.pushNewTaskInFirstStage(taskTreeItem);
+        this.taskTreeProvider.refresh();
       }
     );
 

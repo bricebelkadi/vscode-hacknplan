@@ -76,8 +76,22 @@
 			{
 				"command": "hacknplan.currentBoard",
 				"title": "Define Current Board"
+			},
+			{
+				"command": "hackplan.createNewTask",
+				"title": "Create New Task",
+				"icon": "assets/img/rocket.svg"
 			}
-		]
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "hackplan.createNewTask",
+					"when": "view == hacknplanTasks",
+					"group": "navigation"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "webpack --mode production",

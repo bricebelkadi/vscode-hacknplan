@@ -2,6 +2,7 @@ import ImportanceLevel from "./importanceLevel.model";
 import User from "./user.model";
 import * as vscode from "vscode";
 import { ModelType } from "./core.model";
+import { Stage } from "./stage.model";
 
 export class Task {
   constructor(obj: any) {
@@ -16,7 +17,7 @@ export class Task {
   title!: string;
   description!: string;
   category!: any;
-  stage!: any;
+  stage!: Stage;
   estimatedCost!: number;
   loggedCost!: number;
   storyTasksEstimatedCost!: number;

@@ -195,7 +195,6 @@ export default class ShowTask {
             task.subtasks[index].subTaskId = subtask.subTaskId.toString();
             let elems = document.querySelectorAll('[data-subtaskid="0"]')
             elems.map(x => x.setAttribute("data-subTaskId", subtask.subTaskId.toString()))
-            console.log(task)
           }
 
           function updateTask() {
@@ -356,7 +355,6 @@ export default class ShowTask {
               newSpan.innerHTML =  e.target.value.length > 0 ? e.target.value : "Not defined";
               updateTask();
             }
-            console.log("task", task);
             let parentElement = e.target.parentElement;
             parentElement.firstElementChild.remove();
             parentElement.appendChild(newSpan);
@@ -369,7 +367,6 @@ export default class ShowTask {
             let index = task.subtasks.findIndex((x) => x.subTaskId === id);
             task.subtasks[index].isCompleted = e.target.checked;
             updateSubtask(task.subtasks[index])
-            console.log(task)
           }
 
           document.addEventListener("DOMContentLoaded", () => {

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { TreeItemCollapsibleState } from "vscode";
+import { Board, MileStone } from "../models/board.model";
 import { ITaskTree } from "../models/core.model";
 import ImportanceLevel from "../models/importanceLevel.model";
 import { Stage, StageTreeItem } from "../models/stage.model";
@@ -76,7 +77,7 @@ class StorageSingleton {
   projectId: ICurrentProjectId[] = [];
 
   getProjectId() {
-    if (this.projectId[0].currentProjectId) {
+    if (this.projectId[0]) {
       return this.projectId[0].currentProjectId;
     } else {
       return null;
@@ -103,7 +104,7 @@ class StorageSingleton {
   boardId: ICurrentBoardId[] = [];
 
   getBoardId() {
-    if (this.boardId[0].currentBoardId) {
+    if (this.boardId[0]) {
       return this.boardId[0].currentBoardId;
     } else {
       return null;
@@ -190,6 +191,29 @@ class StorageSingleton {
       if (indexTask > -1) {
         this.taskTree[indexStage].tasks.splice(indexTask, 1, task);
       }
+    }
+  }
+
+  boardTree: (MileStone|Board)[] = [];
+
+  updateBoardTree(obj: MileStone|Board) {
+    this.boardTree.push(obj);
+  }
+  
+  resetBoardTree() {
+    this.boardTree.splice(0, this.boardTree.length);
+  }
+
+  getBoardFromMilestone(mileId: number) {
+    let index = this.boardTree.findIndex((x: MileStone|Board) => {
+      if (x instanceof MileStone) {
+        return x.milestoneId === mileId;
+      } else {
+        return false;
+      }});
+    if (index >  -1) {
+      let milestone = this.boardTree[index] as MileStone;
+      return milestone.boards;
     }
   }
 }

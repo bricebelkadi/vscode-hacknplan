@@ -42,6 +42,7 @@ export class MainTreeContainer {
         StorageService.resetTaskTree();
         StorageService.storeProjectId(projectId);
         StorageService.eraseBoardId();
+        StorageService.resetBoardTree();
         await ImportanceLevelService.getAndStore(projectId);
         await StageService.getAndStore(projectId);
         this.taskTreeProvider.refresh();

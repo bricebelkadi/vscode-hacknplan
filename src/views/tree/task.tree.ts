@@ -31,7 +31,6 @@ export class TaskTreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
       } else {
         let currentTaskTree = StorageService.getTaskTreeStages();
         if (currentTaskTree.length > 0) {
-          console.log("on y est")
           return currentTaskTree;
         } else {
           const allStages = StorageService.getAllStages(projectId);

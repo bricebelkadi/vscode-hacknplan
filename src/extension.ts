@@ -88,9 +88,11 @@ export async function activate(context: vscode.ExtensionContext) {
               },
             });
           case "addAssignedUser":
-            return await TaskService.addUserToTask(message.params);
+            await TaskService.addUserToTask(message.params);
+            return mainTree.taskTreeProvider.refresh();
           case "deleteAssignedUser":
-            return await TaskService.deleteUserFromTask(message.params);
+            await TaskService.deleteUserFromTask(message.params);
+            return mainTree.taskTreeProvider.refresh();
           case "updateSubTask":
             return await TaskService.updateSubTask(message.params);
           case "deleteSubTask":

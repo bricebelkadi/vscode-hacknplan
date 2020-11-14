@@ -130,17 +130,16 @@ export default class TaskService {
   static async addUserToTask( params : {
     projectId: number,
     taskId: number,
-    userId: string
+    userId: string,
+    stageId: string
   }
   ) {
-    let userId = parseInt(params.userId, 10)
     const result = await Axios.post(
       `https://api.hacknplan.com/v0/projects/${params.projectId}/workitems/${params.taskId}/users`,
-      userId,
+      params.userId,
       { headers: { "Content-Type": "application/json" } }
     );
-    console.log(result)
-
+    return StorageService.deleteTaskOfStage(parseInt(params.stageId, 10));
   }
 
 
@@ -148,12 +147,13 @@ export default class TaskService {
   static async deleteUserFromTask( params : {
     projectId: number,
     taskId: number,
-    userId: string
+    userId: string,
+    stageId: string
   }) {
     const result = await Axios.delete(
       `https://api.hacknplan.com/v0/projects/${params.projectId}/workitems/${params.taskId}/users/${params.userId}`
     );
-    console.log(result)
+    return StorageService.deleteTaskOfStage(parseInt(params.stageId, 10));
   }
 
 

@@ -43,19 +43,21 @@ function addAssignedUser(userId) {
         params: {
             projectId: task.projectId,
             taskId: task.taskId,
-            userId
+            userId,
+            stageId: task.stageId
         }
     });
 }
 
 
-function deleteAssignedUser(userId) {
+function deleteAssignedUserMessage(userId) {
     vscode.postMessage({
         command: "deleteAssignedUser",
         params: {
             projectId: task.projectId,
             taskId: task.taskId,
-            userId
+            userId,
+            stageId: task.stageId
         }
     });
 }
@@ -88,9 +90,9 @@ function deleteAssignedUser(e) {
     if (id) {
         let index = task.assignedUsersId.findIndex(x => x === id);
         if (index > -1) {
-            e.parentNode.parentNode.remove(e.parentNode);
+            e.currentTarget.parentNode.parentNode.remove(e.parentNode);
             task.assignedUsersId.splice(index, 1);
-            deleteAssignedUser(id);
+            deleteAssignedUserMessage(id);
         }
     }
 }
@@ -135,7 +137,7 @@ function createNewSubTask(subTask) {
 
 function deleteSubtask(e) {
     let subTaskId = e.target.getAttribute('data-subTaskId');
-    if (!subTaskId) {return;}
+    if (!subTaskId) { return; }
     let index = task.subtasks.findIndex(x => x.subTaskId === subTaskId);
     vscode.postMessage({
         command: "deleteSubTask",
@@ -188,9 +190,8 @@ function spanToInput(e) {
     if (!isTextarea) {
         input.setAttribute("type", e.target.getAttribute("data-type"));
         input.setAttribute("value", e.target.innerHTML);
-    } else {input.innerHTML = e.target.innerHTML;}
-    if (e.target.getAttribute("data-class"))
-        {input.setAttribute("class", e.target.getAttribute("data-class"));}
+    } else { input.innerHTML = e.target.innerHTML; }
+    if (e.target.getAttribute("data-class")) { input.setAttribute("class", e.target.getAttribute("data-class")); }
     if (e.target.getAttribute("data-subTaskId")) {
         input.setAttribute(
             "data-subTaskId",
@@ -231,10 +232,10 @@ function inputToSpan(e) {
         let index = task.subtasks.findIndex(
             (x) => x.subTaskId === subtaskId
         );
-        if (index > -1) {task.subtasks[index].title = e.target.value;}
+        if (index > -1) { task.subtasks[index].title = e.target.value; }
         newSpan.innerHTML = e.target.value.length > 0 ? e.target.value : "Not defined";
-        if (e.target.getAttribute('data-subTaskId') === "0") {createNewSubTask(task.subtasks[index]);}
-        else {updateSubtask(task.subtasks[index]);}
+        if (e.target.getAttribute('data-subTaskId') === "0") { createNewSubTask(task.subtasks[index]); }
+        else { updateSubtask(task.subtasks[index]); }
     } else {
         task[e.target.name] = e.target.value;
         newSpan.innerHTML = e.target.value.length > 0 ? e.target.value : "Not defined";
@@ -323,5 +324,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('addUser').addEventListener('click', assignedNewUser);
+
+    let deleteUserSpan = document.querySelectorAll('span.userDelete');
+    if (deleteUserSpan.length > 0) {
+        [...deleteUserSpan].map(x => x.addEventListener('click', deleteAssignedUser));
+    }
 });
 

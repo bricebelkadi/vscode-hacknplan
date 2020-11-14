@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { X_OK } from "constants";
 import { networkInterfaces } from "os";
 import { TreeItemCollapsibleState } from "vscode";
 import { Board, MileStone } from "../models/board.model";
@@ -134,6 +135,13 @@ class StorageSingleton {
 
   getFirstStageId () {
     return this.taskTree[0].stage.stageId;
+  }
+
+  deleteTaskOfStage(stageId: number) {
+    let index = this.taskTree.findIndex((x: ITaskTree) => x.stage.stageId === stageId);
+    if (index > -1) {
+      this.taskTree[index].tasks = undefined ;
+    }
   }
   
   updateTaskTree (taskTree: ITaskTree[]) {

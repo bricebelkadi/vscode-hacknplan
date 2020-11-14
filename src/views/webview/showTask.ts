@@ -71,7 +71,7 @@ export default class ShowTask {
   private static generateUserJs(arr: IAssignedUsers[]) {
     let str = "";
     arr.map((x: IAssignedUsers) => {
-      str += `${x.user.id}",`;
+      str += `"${x.user.id}",`;
     });
     return str;
   }
@@ -174,6 +174,7 @@ export default class ShowTask {
             ${this.generateAllUserJs(allUsers)}
           ]
           const task = {
+            stageId: "${task.stage.stageId}",
             projectId: "${task.projectId}",
             taskId: "${task.workItemId}",
             title: "${task.title.length ? task.title : "Not defined"}",

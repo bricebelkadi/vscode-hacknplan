@@ -1,7 +1,7 @@
 import ImportanceLevel from "./importanceLevel.model";
 import User from "./user.model";
 import * as vscode from "vscode";
-import { ModelType } from "./core.model";
+import { IAssignedUsers, ModelType } from "./core.model";
 import { Stage } from "./stage.model";
 
 export class Task {
@@ -28,7 +28,7 @@ export class Task {
   creationDate!: Date;
   user!: User;
   board!: any;
-  assignedUsers!: User[];
+  assignedUsers!: IAssignedUsers[];
   tags!: any[];
   importanceLevel!: ImportanceLevel;
   hasDependencies!: boolean;
@@ -54,8 +54,10 @@ export class TaskTreeItem extends vscode.TreeItem {
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly type: ModelType,
-    public readonly idTask: number
+    public readonly idTask: number,
+    public stageId: number
   ) {
     super(label, collapsibleState);
+    this.contextValue = "task";
   }
 }

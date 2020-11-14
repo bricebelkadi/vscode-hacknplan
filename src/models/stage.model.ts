@@ -30,3 +30,12 @@ export class StageTreeItem extends vscode.TreeItem {
     super(label, collapsibleState);
   }
 }
+
+export class StageQuickPick {
+  constructor(stage : Stage) {
+      this.label = stage.name;
+      this.stageId = stage.stageId;
+  }
+  label: string;
+  stageId: number;
+}

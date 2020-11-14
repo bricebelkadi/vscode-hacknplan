@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { networkInterfaces } from "os";
 import { TreeItemCollapsibleState } from "vscode";
 import { Board, MileStone } from "../models/board.model";
-import { ITaskTree } from "../models/core.model";
+import { IMe, IProjectUsers, ITaskTree } from "../models/core.model";
 import ImportanceLevel from "../models/importanceLevel.model";
 import { Stage, StageTreeItem } from "../models/stage.model";
 import { TaskTreeItem } from "../models/task.model";
+import User from "../models/user.model";
 
 interface IAllStages {
   projectId: number;
@@ -129,6 +131,10 @@ class StorageSingleton {
 
 
   taskTree : ITaskTree[] = [];
+
+  getFirstStageId () {
+    return this.taskTree[0].stage.stageId;
+  }
   
   updateTaskTree (taskTree: ITaskTree[]) {
     taskTree.map(x => this.taskTree.push(x));
@@ -138,12 +144,30 @@ class StorageSingleton {
     const index = this.taskTree.findIndex(x => x.stage.stageId === stageId);
     if (index > -1) {
       this.taskTree[index].tasks = obj;
-    } else {
+    } 
+  }
+
+  updateTaskStage(task: TaskTreeItem, stageId: number) {
+    let oldStageIndex = this.taskTree.findIndex((x: ITaskTree) => x.stage.stageId === task.stageId);
+    if (oldStageIndex > -1 ) {
+        let oldTaskIndex = this.taskTree[oldStageIndex].tasks?.findIndex((x:TaskTreeItem) => x.idTask === task.idTask);
+        if (oldTaskIndex !== undefined && oldTaskIndex > -1) {
+          this.taskTree[oldStageIndex].tasks?.splice(oldTaskIndex, 1);
+          task.stageId = stageId;
+          const newStageId = this.taskTree.findIndex((x:ITaskTree) => x.stage.stageId === stageId);
+          if (newStageId > -1 && this.taskTree[newStageId].tasks instanceof Array) {
+            this.taskTree[newStageId].tasks?.push(task);
+        }
+      }
     }
   }
 
   pushNewTaskInFirstStage(task: TaskTreeItem) {
-    this.taskTree[0].tasks.push(task);
+    if (this.taskTree[0].tasks instanceof Array) {
+      this.taskTree[0].tasks.push(task);
+    } else {
+      this.taskTree[0].tasks = [task];
+    }
   }
 
   getTaskTreeStages() {
@@ -187,9 +211,9 @@ class StorageSingleton {
   updateTask(stageId:number, task: TaskTreeItem) {
     let indexStage = this.taskTree.findIndex(x => x.stage.stageId === stageId);
     if (indexStage > -1) {
-      let indexTask = this.taskTree[indexStage].tasks.findIndex(x => x.idTask === task.idTask);
-      if (indexTask > -1) {
-        this.taskTree[indexStage].tasks.splice(indexTask, 1, task);
+      let indexTask = this.taskTree[indexStage].tasks?.findIndex(x => x.idTask === task.idTask);
+      if (indexTask && indexTask > -1) {
+        this.taskTree[indexStage].tasks?.splice(indexTask, 1, task);
       }
     }
   }
@@ -215,6 +239,34 @@ class StorageSingleton {
       let milestone = this.boardTree[index] as MileStone;
       return milestone.boards;
     }
+  }
+
+  users: IProjectUsers[] = [];
+
+  getUsers(projectId: number) {
+    let index = this.users.findIndex((x: IProjectUsers) => x.projectId === projectId);
+    if (index > -1) {
+      return this.users[index].users;
+    }
+  }
+
+  storeUsers(obj: IProjectUsers) {
+    let index = this.users.findIndex((x: IProjectUsers) => x.projectId === obj.projectId);
+    if (index < 0) {
+      return this.users.push(obj);
+    } else {
+      return this.users[index].users = obj.users;
+    }
+  }
+
+  me: IMe = {me: undefined};
+
+  getMe() {
+    return this.me.me;
+  }
+
+  storeMe(me: User) {
+    return this.me.me = me;
   }
 }
 

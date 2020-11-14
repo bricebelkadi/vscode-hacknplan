@@ -7,16 +7,18 @@ import TaskService from "../../services/task.service";
 import ImportanceLevelService from "../../services/importanceLevel.service";
 import StageService from "../../services/stage.service";
 import { Task, TaskTreeItem } from "../../models/task.model";
+import { MessageService } from "../../services/message.service";
+import { UserService } from "../../services/user.service";
 
 export class MainTreeContainer {
   projectTreeProvider: ProjectTreeProvider;
-  projectTree : vscode.TreeView<ProjectTreeProvider>;
+  projectTree: vscode.TreeView<ProjectTreeProvider>;
 
-  boardTreeProvider : BoardTreeProvider;
-  boardTree : vscode.TreeView<BoardTreeProvider>;
+  boardTreeProvider: BoardTreeProvider;
+  boardTree: vscode.TreeView<BoardTreeProvider>;
 
   taskTreeProvider: TaskTreeProvider;
-  taskTree : vscode.TreeView<TaskTreeProvider>;
+  taskTree: vscode.TreeView<TaskTreeProvider>;
   constructor() {
     this.projectTreeProvider = new ProjectTreeProvider();
     this.projectTree = vscode.window.createTreeView("hacknplanProjects", {
@@ -30,7 +32,7 @@ export class MainTreeContainer {
 
     this.taskTreeProvider = new TaskTreeProvider();
     this.taskTree = vscode.window.createTreeView("hacknplanTasks", {
-      treeDataProvider: this.taskTreeProvider
+      treeDataProvider: this.taskTreeProvider,
     });
 
     // taskTree.onDidExpandElement((x) => StorageService.updateCollapseState(x.element.stageId, vscode.TreeItemCollapsibleState.Expanded));
@@ -45,6 +47,7 @@ export class MainTreeContainer {
         StorageService.resetBoardTree();
         await ImportanceLevelService.getAndStore(projectId);
         await StageService.getAndStore(projectId);
+        await UserService.getAndStore(projectId);
         this.taskTreeProvider.refresh();
         return this.boardTreeProvider.refresh();
       }
@@ -59,23 +62,40 @@ export class MainTreeContainer {
         if (projectId) {
           StorageService.getAllStages(projectId);
           return this.taskTreeProvider.refresh();
-        }
-        else {
-          return console.log("current project id not defined, in command currentBoard");
+        } else {
+          return console.log(
+            "current project id not defined, in command currentBoard"
+          );
         }
       }
     );
 
+    vscode.commands.registerCommand("hacknplan.createNewTask", async () => {
+      const newTask = await TaskService.createNewTask();
+      vscode.commands.executeCommand("hacknplan.showTask", newTask);
+      const firstStageId = StorageService.getFirstStageId();
+      let taskTreeItem = TaskService.generateTaskTreeItem(
+        newTask,
+        firstStageId
+      );
+      StorageService.pushNewTaskInFirstStage(taskTreeItem);
+      this.taskTreeProvider.refresh();
+    });
+
     vscode.commands.registerCommand(
-      "hackplan.createNewTask",
-      async () => {
-        const newTask = await TaskService.createNewTask();
-        vscode.commands.executeCommand("hacknplan.showTask", newTask);
-        let taskTreeItem = TaskService.generateTaskTreeItem(newTask);
-        StorageService.pushNewTaskInFirstStage(taskTreeItem);
+      "hacknplan.changeTaskStage",
+      async (task: TaskTreeItem) => {
+        const stages = StageService.generateStageQuickPickItem(task.stageId);
+        const newStageId = await MessageService.changeStateMessage(
+          task,
+          stages
+        );
+        const projectId = StorageService.getProjectId();
+        if (newStageId && projectId) {
+          await TaskService.updateStageTask(projectId, task.idTask, newStageId);
+        }
         this.taskTreeProvider.refresh();
       }
     );
-
   }
 }

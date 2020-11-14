@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { Stage, StageTreeItem } from "../models/stage.model";
+import { Stage, StageQuickPick, StageTreeItem } from "../models/stage.model";
 import * as vscode from "vscode";
 import StorageService from "./storage.service";
 import { ITaskTree } from "../models/core.model";
@@ -29,7 +29,7 @@ export default class StageService {
     stageTreeItems.map((x: StageTreeItem) => {
       let taskTree : ITaskTree = {
         stage: x,
-        tasks: []
+        tasks: undefined
       };
       currentTaskTree.push(taskTree);
     });
@@ -55,5 +55,17 @@ export default class StageService {
       });
       StorageService.addToAllStages({ projectId: projectId, stages: result });
     }
+  }
+
+  static generateStageQuickPickItem (stageId: number) {
+    const projectId = StorageService.getProjectId();
+    const allStages = StorageService.getAllStages(projectId || 0);
+    if (!projectId || allStages.length === 0) {
+      return [];
+    }
+    const stagePickItems = allStages.map((x : Stage) => {
+      return new StageQuickPick(x);
+    });
+    return stagePickItems.filter((x: StageQuickPick) => x.stageId !== stageId);
   }
 }

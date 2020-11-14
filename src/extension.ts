@@ -4,8 +4,10 @@ import Axios, { AxiosRequestConfig } from "axios";
 import * as vscode from "vscode";
 import { Task } from "./models/task.model";
 import TaskService from "./services/task.service";
+import { UserService } from "./services/user.service";
 import { MainTreeContainer } from "./views/tree/main.tree";
 import ShowTask from "./views/webview/showTask";
+import * as path from "path";
 
 interface IMessageTask {
   command: string;
@@ -28,6 +30,8 @@ export async function activate(context: vscode.ExtensionContext) {
     });
   }
 
+  await UserService.getAndStoreMe();
+
   const mainTree = new MainTreeContainer();
 
   const showTaskDetailCommand = vscode.commands.registerCommand(
@@ -39,7 +43,36 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.ViewColumn.Beside,
         { enableScripts: true }
       );
-      panel.webview.html = await ShowTask.showTaskHTML(task);
+
+      const showTaskCSS = vscode.Uri.file(
+        path.join(
+          context.extensionPath,
+          "src",
+          "views",
+          "webview",
+          "showTask",
+          "styles.css"
+        )
+      );
+      const showTaskCSSSrc = panel.webview.asWebviewUri(showTaskCSS);
+
+      const showTaskJS = vscode.Uri.file(
+        path.join(
+          context.extensionPath,
+          "src",
+          "views",
+          "webview",
+          "showTask",
+          "utils.js"
+        )
+      );
+      const showTaskJSSrc = panel.webview.asWebviewUri(showTaskJS);
+
+      panel.webview.html = await ShowTask.showTaskHTML(
+        task,
+        showTaskCSSSrc,
+        showTaskJSSrc
+      );
 
       // handle patch of task
       panel.webview.onDidReceiveMessage(async (message: IMessageTask) => {
@@ -54,6 +87,10 @@ export async function activate(context: vscode.ExtensionContext) {
                 newSubTask,
               },
             });
+          case "addAssignedUser":
+            return await TaskService.addUserToTask(message.params);
+          case "deleteAssignedUser":
+            return await TaskService.deleteUserFromTask(message.params);
           case "updateSubTask":
             return await TaskService.updateSubTask(message.params);
           case "deleteSubTask":
@@ -67,7 +104,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(showTaskDetailCommand);
-
 }
 
 // this method is called when your extension is deactivated

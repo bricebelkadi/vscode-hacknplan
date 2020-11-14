@@ -78,17 +78,29 @@
 				"title": "Define Current Board"
 			},
 			{
-				"command": "hackplan.createNewTask",
+				"command": "hacknplan.createNewTask",
 				"title": "Create New Task",
+				"icon": "assets/img/rocket.svg"
+			},
+			{
+				"command": "hacknplan.changeTaskStage",
+				"title": "Change the Stage of the Task",
 				"icon": "assets/img/rocket.svg"
 			}
 		],
 		"menus": {
 			"view/title": [
 				{
-					"command": "hackplan.createNewTask",
+					"command": "hacknplan.createNewTask",
 					"when": "view == hacknplanTasks",
 					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "hacknplan.changeTaskStage",
+					"when": "view == hacknplanTasks && viewItem == task",
+					"group": "inline"
 				}
 			]
 		}

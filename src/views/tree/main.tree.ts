@@ -9,6 +9,7 @@ import StageService from "../../services/stage.service";
 import { Task, TaskTreeItem } from "../../models/task.model";
 import { MessageService } from "../../services/message.service";
 import { UserService } from "../../services/user.service";
+import { StageTreeItem } from "../../models/stage.model";
 
 export class MainTreeContainer {
   projectTreeProvider: ProjectTreeProvider;
@@ -97,5 +98,14 @@ export class MainTreeContainer {
         this.taskTreeProvider.refresh();
       }
     );
+
+    vscode.commands.registerCommand(
+      "hacknplan.refreshStage",
+      (stage: StageTreeItem) => {
+        StorageService.deleteTaskOfStage(stage.stageId);
+        this.taskTreeProvider.refresh();
+      }
+    );
+
   }
 }

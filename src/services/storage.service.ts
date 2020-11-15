@@ -276,6 +276,7 @@ class StorageSingleton {
   storeMe(me: User) {
     return this.me.me = me;
   }
+
 }
 
 const StorageService = new StorageSingleton();

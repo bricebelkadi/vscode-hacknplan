@@ -8,6 +8,7 @@ import { UserService } from "./services/user.service";
 import { MainTreeContainer } from "./views/tree/main.tree";
 import ShowTask from "./views/webview/showTask";
 import * as path from "path";
+import StorageService from "./services/storage.service";
 
 interface IMessageTask {
   command: string;

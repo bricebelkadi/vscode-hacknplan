@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import * as path from "path";
+import StorageService from "../services/storage.service";
 import { ModelType } from "./core.model";
 
 export class Stage {
@@ -28,6 +30,7 @@ export class StageTreeItem extends vscode.TreeItem {
     public readonly stageId: number
   ) {
     super(label, collapsibleState);
+    this.contextValue = "stage";
   }
 }
 

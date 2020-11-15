@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { X_OK } from "constants";
-import { networkInterfaces } from "os";
 import { TreeItemCollapsibleState } from "vscode";
 import { Board, MileStone } from "../models/board.model";
 import { IMe, IProjectUsers, ITaskTree } from "../models/core.model";
@@ -27,6 +25,11 @@ interface ICurrentProjectId {
 interface ICurrentBoardId {
   currentBoardId: number;
 }
+
+interface IExtensionPath {
+  path: string;
+}
+
 
 
 class StorageSingleton {
@@ -276,6 +279,17 @@ class StorageSingleton {
   storeMe(me: User) {
     return this.me.me = me;
   }
+
+  extensionPath: IExtensionPath = {path: ""};
+
+  getExtensionPath() {
+    return this.extensionPath.path;
+  }
+
+  storeExtensionPath(path: string) {
+    return this.extensionPath.path = path;
+  }
+
 
 }
 

@@ -1,7 +1,5 @@
-import * as vscode from "vscode";
-import * as path from "path";
-import StorageService from "../services/storage.service";
-import { ModelType } from "./core.model";
+import * as vscode from 'vscode';
+import { ModelType } from './core.model';
 
 export class Stage {
   constructor(obj: any) {

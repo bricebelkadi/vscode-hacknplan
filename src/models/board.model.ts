@@ -1,6 +1,4 @@
-import * as path from "path";
 import * as vscode from "vscode";
-import StorageService from "../services/storage.service";
 import { ModelType } from "./core.model";
 
 export class Board {

@@ -1,5 +1,6 @@
+import * as path from "path";
 import * as vscode from "vscode";
-import { threadId } from "worker_threads";
+import StorageService from "../services/storage.service";
 import { ModelType } from "./core.model";
 
 export class Board {

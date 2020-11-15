@@ -30,7 +30,7 @@
 				{
 					"id": "hacknplan",
 					"title": "Hack N Plan",
-					"icon": "assets/img/rocket.svg"
+					"icon": "assets/img/light/rocket.svg"
 				}
 			]
 		},
@@ -39,19 +39,16 @@
 				{
 					"id": "hacknplanProjects",
 					"name": "Projects",
-					"icon": "assets/img/rocket.svg",
 					"contextualTitle": "Hack N Plan extension"
 				},
 				{
 					"id": "hacknplanBoards",
 					"name": "Boards",
-					"icon": "assets/img/rocket.svg",
 					"contextualTitle": "Hack N Plan extension"
 				},
 				{
 					"id": "hacknplanTasks",
 					"name": "Tasks",
-					"icon": "assets/img/rocket.svg",
 					"contextualTitle": "Hack N Plan extension"
 				}
 			]
@@ -80,12 +77,26 @@
 			{
 				"command": "hacknplan.createNewTask",
 				"title": "Create New Task",
-				"icon": "assets/img/rocket.svg"
+				"icon": {
+					"light": "assets/img/light/plus.svg",
+					"dark": "assets/img/dark/plus.svg"
+				}
 			},
 			{
 				"command": "hacknplan.changeTaskStage",
 				"title": "Change the Stage of the Task",
-				"icon": "assets/img/rocket.svg"
+				"icon": {
+					"light": "assets/img/light/shuffle.svg",
+					"dark": "assets/img/dark/shuffle.svg"
+				}
+			},
+			{
+				"command": "hacknplan.refreshStage",
+				"title": "Refresh this stage",
+				"icon": {
+					"light": "assets/img/light/refresh.svg",
+					"dark": "assets/img/dark/refresh.svg"
+				}
 			}
 		],
 		"menus": {
@@ -100,6 +111,11 @@
 				{
 					"command": "hacknplan.changeTaskStage",
 					"when": "view == hacknplanTasks && viewItem == task",
+					"group": "inline"
+				},
+				{
+					"command": "hacknplan.refreshStage",
+					"when": "view == hacknplanTasks && viewItem == stage",
 					"group": "inline"
 				}
 			]

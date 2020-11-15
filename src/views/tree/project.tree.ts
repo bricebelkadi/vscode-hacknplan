@@ -1,8 +1,6 @@
 import { AnySrvRecord } from "dns";
 import * as vscode from "vscode";
-import ImportanceLevelService from "../../services/importanceLevel.service";
 import ProjectService from "../../services/project.service";
-import StageService from "../../services/stage.service";
 
 export class ProjectTreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
   private _onDidChangeTreeData: vscode.EventEmitter<

@@ -12,16 +12,33 @@
 	"activationEvents": [
 		"onView:hacknplanProjects",
 		"onView:hacknplanBoards",
-		"onView:hacknplanTasks"
+		"onView:hacknplanTasks",
+		"onCommand:hacknplan.defineAPIKey"
 	],
 	"main": "./dist/extension",
 	"contributes": {
+		"viewsWelcome": [
+			{
+				"view": "hacknplanBoards",
+				"contents": "No project defined. Please select first a project in the tree view above"
+			},
+			{
+				"view": "hacknplanTasks",
+				"contents": "No board defined. Please select first a board in the tree view above"
+			},
+			{
+				"view": "hacknplanProjects",
+				"contents": "No API Key define. Please define first your [API key](https://hacknplan.com/knowledge-base/api-authentication/#articleTOC_0) to let this extension access to your HackNPlan account. \n[Define your API Key](command:hacknplan.defineAPIKey)"
+			}
+
+		],
 		"configuration": {
 			"title": "Hack'N'Plan",
 			"properties": {
 				"hacknplan.apiKey": {
 					"type": "string",
-					"default": "516cc2a8dc974d33aa0d0539b582cd89"
+					"default": "",
+					"description": "Your API Key to access to your HackNPlan account"
 				}
 			}
 		},
@@ -55,12 +72,8 @@
 		},
 		"commands": [
 			{
-				"command": "hacknplan.helloWorld",
-				"title": "Hello World"
-			},
-			{
-				"command": "hacknplan.getAllProjects",
-				"title": "Get All Projects"
+				"command": "hacknplan.defineAPIKey",
+				"title": "Define your API Key"
 			},
 			{
 				"command": "hacknplan.showTask",

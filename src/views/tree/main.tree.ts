@@ -11,7 +11,7 @@ import { MessageService } from "../../services/message.service";
 import { UserService } from "../../services/user.service";
 import { StageTreeItem } from "../../models/stage.model";
 
-export class MainTreeContainer {
+class MainTree {
   projectTreeProvider: ProjectTreeProvider;
   projectTree: vscode.TreeView<ProjectTreeProvider>;
 
@@ -35,9 +35,6 @@ export class MainTreeContainer {
     this.taskTree = vscode.window.createTreeView("hacknplanTasks", {
       treeDataProvider: this.taskTreeProvider,
     });
-
-    // taskTree.onDidExpandElement((x) => StorageService.updateCollapseState(x.element.stageId, vscode.TreeItemCollapsibleState.Expanded));
-    // taskTree.onDidCollapseElement((x) => StorageService.updateCollapseState(x.element.stageId, vscode.TreeItemCollapsibleState.Collapsed));
 
     vscode.commands.registerCommand(
       "hacknplan.currentProject",
@@ -109,3 +106,6 @@ export class MainTreeContainer {
 
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const MainTreeContainer = new MainTree();

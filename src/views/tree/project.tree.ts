@@ -3,11 +3,8 @@ import * as vscode from "vscode";
 import ProjectService from "../../services/project.service";
 
 export class ProjectTreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
-  private _onDidChangeTreeData: vscode.EventEmitter<
-    void | null
-  > = new vscode.EventEmitter<void | null>();
-  readonly onDidChangeTreeData: vscode.Event<void | null> = this
-    ._onDidChangeTreeData.event;
+  private _onDidChangeTreeData: vscode.EventEmitter<void | null> = new vscode.EventEmitter<void | null>();
+  readonly onDidChangeTreeData: vscode.Event<void | null> = this._onDidChangeTreeData.event;
 
   constructor() {}
 
@@ -25,4 +22,9 @@ export class ProjectTreeProvider implements vscode.TreeDataProvider<AnySrvRecord
       return Promise.resolve([]);
     }
   }
+
+  refresh() {
+    this._onDidChangeTreeData.fire();
+  }
+
 }

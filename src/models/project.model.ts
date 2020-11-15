@@ -1,8 +1,6 @@
-import User from "./user.model";
 import * as vscode from "vscode";
-import * as path from "path";
 import { ModelType } from "./core.model";
-import StorageService from "../services/storage.service";
+import User from "./user.model";
 
 export class Project {
   constructor(obj: any) {

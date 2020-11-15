@@ -1,10 +1,9 @@
+import * as vscode from "vscode";
 import { IAssignedUsers } from "../../models/core.model";
 import ImportanceLevel from "../../models/importanceLevel.model";
 import { SubTask, Task } from "../../models/task.model";
-import User from "../../models/user.model";
 import StorageService from "../../services/storage.service";
 import TaskService from "../../services/task.service";
-import * as vscode from "vscode";
 
 export default class ShowTask {
   private static generateSubtasksJS(arr: SubTask[]) {

@@ -90,7 +90,6 @@ export default class ShowTask {
 
   }
 
-
   static async showTaskHTML(task: Task, cssUri: vscode.Uri, jsUri : vscode.Uri) {
     const importanceLevel = StorageService.getAllImportanceLevel(
       task.projectId

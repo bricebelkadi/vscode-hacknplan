@@ -280,17 +280,6 @@ class StorageSingleton {
     return this.me.me = me;
   }
 
-  extensionPath: IExtensionPath = {path: ""};
-
-  getExtensionPath() {
-    return this.extensionPath.path;
-  }
-
-  storeExtensionPath(path: string) {
-    return this.extensionPath.path = path;
-  }
-
-
 }
 
 const StorageService = new StorageSingleton();

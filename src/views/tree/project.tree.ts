@@ -16,7 +16,7 @@ export class ProjectTreeProvider implements vscode.TreeDataProvider<AnySrvRecord
     if (element === null || element === undefined) {
       return await ProjectService.generateProjectTreeItems();
     } else {
-      if (element.type === "Project" && element.projectId) {
+      if (element.contextValue === "project" && element.projectId) {
         return Promise.resolve([]);
       }
       return Promise.resolve([]);

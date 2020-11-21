@@ -1,12 +1,54 @@
-import * as vscode from "vscode";
-import { IAssignedUsers } from "../../models/core.model";
-import ImportanceLevel from "../../models/importanceLevel.model";
-import { SubTask, Task } from "../../models/task.model";
-import StorageService from "../../services/storage.service";
-import TaskService from "../../services/task.service";
+import * as path from 'path';
+import * as vscode from 'vscode';
+import { IAssignedUsers } from '../../models/core.model';
+import ImportanceLevel from '../../models/importanceLevel.model';
+import { SubTask, Task } from '../../models/task.model';
+import StorageService from '../../services/storage.service';
+import TaskService from '../../services/task.service';
+import { MainTreeContainer } from '../tree/main.tree';
 
-export default class ShowTask {
-  private static generateSubtasksJS(arr: SubTask[]) {
+interface IMessageTask {
+  command: string;
+  params: any;
+}
+
+export class TaskWebview {
+  showTaskCommand: vscode.Disposable;
+  panelTask: vscode.WebviewPanel;
+  cssTask: vscode.Uri;
+  jsTask: vscode.Uri;
+  cssTaskSrc: vscode.Uri;
+  jsTaskSrc: vscode.Uri;
+
+  onDidReceiveMessage = async (message: IMessageTask) => {
+    switch (message.command) {
+      case "createNewSubTask":
+        const newSubTask = await TaskService.createNewSubTask(
+          message.params
+        );
+        return this.panelTask.webview.postMessage({
+          command: "createNewSubTaskResponse",
+          params: {
+            newSubTask,
+          },
+        });
+      case "addAssignedUser":
+        await TaskService.addUserToTask(message.params);
+        return MainTreeContainer.taskTreeProvider.refresh();
+      case "deleteAssignedUser":
+        await TaskService.deleteUserFromTask(message.params);
+        return MainTreeContainer.taskTreeProvider.refresh();
+      case "updateSubTask":
+        return await TaskService.updateSubTask(message.params);
+      case "deleteSubTask":
+        return await TaskService.deleteSubTask(message.params);
+      case "updateTask":
+        await TaskService.updateTask(message.params);
+        return MainTreeContainer.taskTreeProvider.refresh();
+    }
+  };
+
+  generateSubtasksJS(arr: SubTask[]) {
     let str = "";
     arr.map((subTask: SubTask) => {
       str += `{
@@ -18,7 +60,7 @@ export default class ShowTask {
     return str;
   }
 
-  private static generateSubtasksHTML(arr: SubTask[]) {
+  generateSubtasksHTML(arr: SubTask[]) {
     let str = "";
     arr.map((subTask: SubTask) => {
       str += `
@@ -39,7 +81,7 @@ export default class ShowTask {
     return str;
   }
 
-  private static generateImportanceLevelHTML(
+  generateImportanceLevelHTML(
     arr: ImportanceLevel[],
     selected: ImportanceLevel
   ) {
@@ -56,7 +98,7 @@ export default class ShowTask {
     return str;
   }
 
-  private static generateUser(assignedUsers : IAssignedUsers[]) {
+  generateUser(assignedUsers : IAssignedUsers[]) {
     let str ='';
     assignedUsers.map((x: IAssignedUsers) => {
       str += `<span class="user" data-userid="${x.user.id}">
@@ -67,7 +109,7 @@ export default class ShowTask {
     return str;
   }
 
-  private static generateUserJs(arr: IAssignedUsers[]) {
+  generateUserJs(arr: IAssignedUsers[]) {
     let str = "";
     arr.map((x: IAssignedUsers) => {
       str += `"${x.user.id}",`;
@@ -75,7 +117,7 @@ export default class ShowTask {
     return str;
   }
 
-  private static generateAllUserJs(arr:IAssignedUsers[] | undefined) {
+  generateAllUserJs(arr:IAssignedUsers[] | undefined) {
     let str = "";
     if (arr === undefined) {
       return str;
@@ -90,7 +132,7 @@ export default class ShowTask {
 
   }
 
-  static async showTaskHTML(task: Task, cssUri: vscode.Uri, jsUri : vscode.Uri) {
+  public async showTaskHTML(task: Task, cssUri: vscode.Uri, jsUri : vscode.Uri) {
     const importanceLevel = StorageService.getAllImportanceLevel(
       task.projectId
     );
@@ -189,5 +231,54 @@ export default class ShowTask {
       </body>
     </html>
     `;
+  }
+
+  constructor(extensionPath: string) {
+    this.panelTask = vscode.window.createWebviewPanel(
+      "showTaskDetail",
+      "Show Task Detail",
+      vscode.ViewColumn.Beside,
+      { enableScripts: true }
+    );
+
+    this.cssTask = vscode.Uri.file(
+      path.join(
+        extensionPath,
+        "src",
+        "views",
+        "webview",
+        "task",
+        "styles.css"
+      )
+    );
+
+    this.jsTask = vscode.Uri.file(
+      path.join(
+        extensionPath,
+        "src",
+        "views",
+        "webview",
+        "task",
+        "utils.js"
+      )
+    );
+
+    this.cssTaskSrc = this.panelTask.webview.asWebviewUri(this.cssTask);
+
+    this.jsTaskSrc = this.panelTask.webview.asWebviewUri(this.jsTask);
+
+    this.panelTask.webview.onDidReceiveMessage(this.onDidReceiveMessage);
+
+    this.showTaskCommand = vscode.commands.registerCommand(
+      "hacknplan.showTask",
+      async (task: Task) => {
+        this.panelTask.webview.html = await this.showTaskHTML(
+          task,
+          this.cssTaskSrc,
+          this.jsTaskSrc
+        );
+
+      }
+    );
   }
 }

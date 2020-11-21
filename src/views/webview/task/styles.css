@@ -60,6 +60,13 @@ select {
   cursor: pointer;
 }
 
+#addUser {
+  margin-left: 10px;
+  font-size: 20px;
+  cursor: pointer;
+
+}
+
 #idTask {
   margin-right: 10px;
 }

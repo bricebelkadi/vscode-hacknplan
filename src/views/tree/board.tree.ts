@@ -21,7 +21,7 @@ export class BoardTreeProvider implements vscode.TreeDataProvider<AnySrvRecord> 
       } else {
         return await BoardService.generateMilestoneTreeItems(projectId);
       }
-    } else if (element.type === "Milestone" && projectId && element.milestoneId) {
+    } else if (element.contextValue === "milestone" && projectId && element.milestoneId) {
       return BoardService.generateBoardFromMilestone(element.milestoneId);
     }
     return Promise.resolve([]);

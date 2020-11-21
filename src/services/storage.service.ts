@@ -201,7 +201,6 @@ class StorageSingleton {
       let newStage = new StageTreeItem(
         this.taskTree[index].stage.label,
         state,
-        "Stage",
         this.taskTree[index].stage.boardId,
         this.taskTree[index].stage.projectId,
         this.taskTree[index].stage.stageId

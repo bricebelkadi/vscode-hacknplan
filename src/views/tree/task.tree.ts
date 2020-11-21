@@ -37,7 +37,7 @@ export class TaskTreeProvider implements vscode.TreeDataProvider<AnySrvRecord> {
           return StageService.generateStageTreeItems(allStages, boardId);
         }
       }
-    } else if (element.type = "Stage" && element.boardId && element.stageId) {
+    } else if (element.contextValue === "stage" && element.boardId && element.stageId) {
       const tasks = StorageService.getTaskTreeTasks(element.stageId);
       if (tasks) {
         return tasks;

@@ -53,7 +53,6 @@ export class TaskTreeItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly type: ModelType,
     public readonly idTask: number,
     public stageId: number
   ) {

@@ -22,11 +22,11 @@ export class BoardTreeItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly type : ModelType,
     public readonly boardId : number,
     public readonly projectId: number
   ) {
     super(label, collapsibleState);
+    this.contextValue = "board";
   }
 }
 
@@ -49,11 +49,11 @@ export class MilestoneTreeItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly type: ModelType,
     public readonly milestoneId: number,
     public readonly projectId: number,
     
   ) {
     super(label, collapsibleState);
+    this.contextValue = "milestone";
   }
 }

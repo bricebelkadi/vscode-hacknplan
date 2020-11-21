@@ -19,7 +19,6 @@ export default class StageService {
       return new StageTreeItem(
         stage.name,
         collapseState,
-        "Stage",
         boardId,
         stage.projectId,
         stage.stageId

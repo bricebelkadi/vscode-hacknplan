@@ -37,6 +37,7 @@ export default class TaskService {
     stageId: number
   ) {
     const result = await this.getAllForStage(projectId, boardId, stageId);
+    console.log(result);
     const taskTreeItems: TaskTreeItem[] = result.map((task: Task) => {
       return this.generateTaskTreeItem(task, stageId);
     });
@@ -192,7 +193,6 @@ export default class TaskService {
     const taskTreeItem = new TaskTreeItem(
       task.title,
       vscode.TreeItemCollapsibleState.Collapsed,
-      "Task",
       task.workItemId,
       stageId
     );

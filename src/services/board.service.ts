@@ -8,7 +8,7 @@ export default class BoardService {
     const result = await Axios.get(
       `https://api.hacknplan.com/v0/projects/${projectId}/boards`
     );
-    return result.data;
+    return result.data as Board[];
   }
 
   static async generateBoardTreeItems(projectId: number) {
@@ -21,7 +21,6 @@ export default class BoardService {
       let boardItem = new BoardTreeItem(
         board.name,
         vscode.TreeItemCollapsibleState.Expanded,
-        "Board",
         board.boardId,
         projectId
       );
@@ -52,7 +51,6 @@ export default class BoardService {
       let milestoneItem = new MilestoneTreeItem(
         mile.name,
         vscode.TreeItemCollapsibleState.Collapsed,
-        "Milestone",
         mile.milestoneId,
         mile.projectId);
       return milestoneItem;
@@ -70,7 +68,6 @@ export default class BoardService {
       let boardItem = new BoardTreeItem(
         board.name,
         vscode.TreeItemCollapsibleState.Expanded,
-        "Board",
         board.boardId,
         board.projectId
       );

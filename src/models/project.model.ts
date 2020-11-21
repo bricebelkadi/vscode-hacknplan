@@ -29,9 +29,9 @@ export class ProjectTreeItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly type : ModelType,
     public readonly projectId : number
   ) {
     super(label, collapsibleState);
+    this.contextValue = "projet";
   }
 }

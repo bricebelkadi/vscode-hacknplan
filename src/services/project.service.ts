@@ -1,8 +1,7 @@
-import Axios from "axios";
-import { Project, ProjectTreeItem } from "../models/project.model";
-import * as vscode from "vscode";
-import StageService from "./stage.service";
-import StorageService from "./storage.service";
+import Axios from 'axios';
+import * as vscode from 'vscode';
+
+import { Project, ProjectTreeItem } from '../models/project.model';
 
 export default class ProjectService {
   static async getAll() {
@@ -16,7 +15,6 @@ export default class ProjectService {
       let projectTreeItem = new ProjectTreeItem(
         pro.name,
         vscode.TreeItemCollapsibleState.Expanded,
-        "Project",
         pro.id
       );
       let projectTreeItemCommand: vscode.Command = {

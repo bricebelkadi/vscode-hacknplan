@@ -13,7 +13,7 @@ interface IMessageTask {
 }
 
 export class TaskWebview {
-  showTaskCommand: vscode.Disposable;
+  // showTaskCommand: vscode.Disposable;
   panelTask: vscode.WebviewPanel;
   cssTask: vscode.Uri;
   jsTask: vscode.Uri;
@@ -74,7 +74,7 @@ export class TaskWebview {
             data-name="title"
             >${subTask.title}</span>
         </span>
-        <span data-delete data-subTaskId="${subTask.subTaskId}" > XXX </span>
+        <span data-delete data-subTaskId="${subTask.subTaskId}" > X </span>
       </div>
       `;
     });
@@ -122,17 +122,18 @@ export class TaskWebview {
     if (arr === undefined) {
       return str;
     }
-    arr.map((x: IAssignedUsers) => {
-      str += `{
-        id: "${x.user.id}",
-        name: "${x.user.name}"
-      },`;
+    arr.map((x: IAssignedUsers, index: number) => {
+      str += `{id: "${x.user.id}",name: "${x.user.name}"}${index === arr.length -1 ? "" : ","}`;
     });
     return str;
 
   }
 
-  public async showTaskHTML(task: Task, cssUri: vscode.Uri, jsUri : vscode.Uri) {
+  transformDescription(des: string) {
+    return des.replace(/(\r\n|\n|\r)/gm,"").replace(/\"/gm, "'");
+  }
+
+  async showTaskHTML(task: Task, cssUri: vscode.Uri, jsUri : vscode.Uri) {
     const importanceLevel = StorageService.getAllImportanceLevel(
       task.projectId
     );
@@ -143,6 +144,9 @@ export class TaskWebview {
       task.projectId,
       task.workItemId
     );
+
+    console.log(task.description);
+    console.log(this.transformDescription(task.description));
     return `<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -164,7 +168,7 @@ export class TaskWebview {
           </div>
           <div class="element col">
             <span class="subtitle">Importance</span>
-            <select name="importanceLevel">
+            <select name="importanceLevel"?game=FRA:2marm>
               ${this.generateImportanceLevelHTML(
                 importanceLevel,
                 task.importanceLevel
@@ -183,7 +187,7 @@ export class TaskWebview {
             <span class="subtitle">Description</span>
             <span class="parent-switch">
               <span data-switch data-type="textarea" data-name="description">
-                ${task.description.length ? task.description : "Not defined"}
+                ${task.description.length ? this.transformDescription(task.description) : "Not defined"}
               </span>
             </span>
           </div>
@@ -221,7 +225,7 @@ export class TaskWebview {
             importanceLevel: "${task.importanceLevel.importanceLevelId}",
             estimatedCost: "${task.estimatedCost}",
             description: "${
-              task.description.length > 0 ? task.description : "Not defined"
+              task.description.length > 0 ? this.transformDescription(task.description) : "Not defined"
             }",
             subtasks: [${this.generateSubtasksJS(subtasks)}],
             assignedUsersId: [${this.generateUserJs(task.assignedUsers)}]
@@ -268,17 +272,5 @@ export class TaskWebview {
     this.jsTaskSrc = this.panelTask.webview.asWebviewUri(this.jsTask);
 
     this.panelTask.webview.onDidReceiveMessage(this.onDidReceiveMessage);
-
-    this.showTaskCommand = vscode.commands.registerCommand(
-      "hacknplan.showTask",
-      async (task: Task) => {
-        this.panelTask.webview.html = await this.showTaskHTML(
-          task,
-          this.cssTaskSrc,
-          this.jsTaskSrc
-        );
-
-      }
-    );
   }
 }

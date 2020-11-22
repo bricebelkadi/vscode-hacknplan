@@ -90,7 +90,7 @@ function deleteAssignedUser(e) {
     if (id) {
         let index = task.assignedUsersId.findIndex(x => x === id);
         if (index > -1) {
-            e.currentTarget.parentNode.parentNode.remove(e.parentNode);
+            e.currentTarget.parentNode.remove(e.currentTarget);
             task.assignedUsersId.splice(index, 1);
             deleteAssignedUserMessage(id);
         }

@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import Axios, { AxiosRequestConfig } from "axios";
 import * as vscode from "vscode";
+import { Task } from "./models/task.model";
 import { MessageService } from "./services/message.service";
 import { UserService } from "./services/user.service";
 import { MainTreeContainer } from "./views/tree/main.tree";
@@ -33,15 +34,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
   await UserService.getAndStoreMe();
 
+  const showTaskCommand = vscode.commands.registerCommand(
+    "hacknplan.showTask",
+    async (task: Task) => {
+      const taskWebview = new TaskWebview(context.extensionPath);
+      let html = await taskWebview.showTaskHTML(
+        task,
+        taskWebview.cssTaskSrc,
+        taskWebview.jsTaskSrc
+      );
+      taskWebview.panelTask.webview.html = html;
 
-
-  // const mainTree = new MainTreeContainer();
-
-  const path = context.extensionPath;
-
-  const taskWebview = new TaskWebview(path);
-
-  context.subscriptions.push(taskWebview.showTaskCommand);
+    }
+  );
+  
+  context.subscriptions.push(showTaskCommand);
 
 }
 

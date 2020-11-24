@@ -9,6 +9,7 @@
 	"categories": [
 		"Other"
 	],
+	"publisher": "BriceBelkadi",
 	"activationEvents": [
 		"onView:hacknplanProjects",
 		"onView:hacknplanBoards",
@@ -47,7 +48,7 @@
 				{
 					"id": "hacknplan",
 					"title": "Hack N Plan",
-					"icon": "assets/img/light/rocket.svg"
+					"icon": "assets/img/light/logo_hackplan.svg"
 				}
 			]
 		},

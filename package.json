@@ -2,7 +2,7 @@
 	"name": "hacknplan",
 	"displayName": "HackNPlan",
 	"description": "HackNPlan extension",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.49.0"
 	},
@@ -10,6 +10,11 @@
 		"Other"
 	],
 	"publisher": "BriceBelkadi",
+	"icon": "assets/img/light/logo_hackplan.png",
+	"repository": {
+		"type": "git",
+    	"url": "https://github.com/bricebelkadi/vscode-hacknplan"
+	},
 	"activationEvents": [
 		"onView:hacknplanProjects",
 		"onView:hacknplanBoards",

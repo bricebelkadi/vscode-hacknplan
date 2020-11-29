@@ -34,12 +34,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const extensionPath = context.extensionPath;
 
+
   await UserService.getAndStoreMe();
 
   const showTaskCommand = vscode.commands.registerCommand(
     "hacknplan.showTask",
     async (task: Task) => {
       const taskWebview = new TaskWebview(extensionPath);
+
       let html = await taskWebview.showTaskHTML(
         task,
         taskWebview.cssTaskSrc,

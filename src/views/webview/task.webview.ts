@@ -1,3 +1,4 @@
+
 import * as path from "path";
 import * as vscode from "vscode";
 import { IAssignedUsers } from "../../models/core.model";
@@ -6,6 +7,7 @@ import { SubTask, Task } from "../../models/task.model";
 import StorageService from "../../services/storage.service";
 import TaskService from "../../services/task.service";
 import { MainTreeContainer } from "../tree/main.tree";
+
 
 interface IMessageTask {
   command: string;
@@ -20,10 +22,12 @@ export class TaskWebview {
   jsTaskSrc: vscode.Uri;
   extensionPath: string;
 
+
   onDidReceiveMessage = async (message: IMessageTask) => {
     switch (message.command) {
       case "createNewSubTask":
         const newSubTask = await TaskService.createNewSubTask(message.params);
+
         return this.panelTask.webview.postMessage({
           command: "createNewSubTaskResponse",
           params: {
@@ -115,6 +119,7 @@ export class TaskWebview {
     return str;
   }
 
+
   generateAllUserJs(arr: IAssignedUsers[] | undefined) {
     let str = "";
     if (arr === undefined) {
@@ -136,9 +141,7 @@ export class TaskWebview {
     const importanceLevel = StorageService.getAllImportanceLevel(
       task.projectId
     );
-
     const allUsers = StorageService.getUsers(task.projectId);
-
     const subtasks = await TaskService.getSubtaks(
       task.projectId,
       task.workItemId
@@ -283,3 +286,4 @@ export class TaskWebview {
     this.panelTask.webview.onDidReceiveMessage(this.onDidReceiveMessage);
   }
 }
+

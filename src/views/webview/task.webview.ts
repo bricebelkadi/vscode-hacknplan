@@ -65,9 +65,10 @@ export class TaskWebview {
   generateSubtasksHTML(arr: SubTask[]) {
     let str = "";
     arr.map((subTask: SubTask) => {
+      console.log(subTask)
       str += `
       <div class="element sub-task">
-        <input type="checkbox" name="isCompleted" data-subTaskId="${subTask.subTaskId}" />
+        <input type="checkbox" name="isCompleted" data-subTaskId="${subTask.subTaskId}" ${subTask.isCompleted ? "checked" : ""}/>
         <span class="parent-switch">
           <span
             data-switch

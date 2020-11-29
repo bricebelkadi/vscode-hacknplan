@@ -21,7 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(defineApiCommand);
-
+    
   // Set Api Key through Axios interceptor
   const apiKey = await vscode.workspace.getConfiguration("hacknplan").get("apiKey");
   if (apiKey) {
@@ -32,12 +32,16 @@ export async function activate(context: vscode.ExtensionContext) {
     MainTreeContainer.projectTreeProvider.refresh();
   }
 
+  const extensionPath = context.extensionPath;
+
+
   await UserService.getAndStoreMe();
 
   const showTaskCommand = vscode.commands.registerCommand(
     "hacknplan.showTask",
     async (task: Task) => {
-      const taskWebview = new TaskWebview(context.extensionPath);
+      const taskWebview = new TaskWebview(extensionPath);
+
       let html = await taskWebview.showTaskHTML(
         task,
         taskWebview.cssTaskSrc,

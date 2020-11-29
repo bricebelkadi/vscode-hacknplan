@@ -37,7 +37,6 @@ export default class TaskService {
     stageId: number
   ) {
     const result = await this.getAllForStage(projectId, boardId, stageId);
-    console.log(result);
     const taskTreeItems: TaskTreeItem[] = result.map((task: Task) => {
       return this.generateTaskTreeItem(task, stageId);
     });

@@ -13,7 +13,7 @@
 	"icon": "assets/img/light/logo_hackplan.png",
 	"repository": {
 		"type": "git",
-    	"url": "https://github.com/bricebelkadi/vscode-hacknplan"
+		"url": "https://github.com/bricebelkadi/vscode-hacknplan"
 	},
 	"activationEvents": [
 		"onView:hacknplanProjects",
@@ -36,7 +36,6 @@
 				"view": "hacknplanProjects",
 				"contents": "No API Key define. Please define first your [API key](https://hacknplan.com/knowledge-base/api-authentication/#articleTOC_0) to let this extension access to your HackNPlan account. \n[Define your API Key](command:hacknplan.defineAPIKey)"
 			}
-
 		],
 		"configuration": {
 			"title": "Hack'N'Plan",

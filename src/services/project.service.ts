@@ -1,6 +1,5 @@
 import Axios from 'axios';
 import * as vscode from 'vscode';
-
 import { Project, ProjectTreeItem } from '../models/project.model';
 
 export default class ProjectService {

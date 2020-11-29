@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { IAssignedUsers, ModelType } from "./core.model";
+import { IAssignedUsers } from "./core.model";
 import ImportanceLevel from "./importanceLevel.model";
 import { Stage } from "./stage.model";
 import User from "./user.model";

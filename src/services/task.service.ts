@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import Axios from "axios";
-import { SubTask, Task, TaskTreeItem } from "../models/task.model";
 import * as vscode from "vscode";
+import { SubTask, Task, TaskTreeItem } from "../models/task.model";
 import StorageService from "./storage.service";
-import { parse } from "path";
 
 export default class TaskService {
   static async getAll(projectId: number) {

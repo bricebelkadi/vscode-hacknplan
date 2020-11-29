@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { ModelType } from './core.model';
 
 export class Stage {
   constructor(obj: any) {

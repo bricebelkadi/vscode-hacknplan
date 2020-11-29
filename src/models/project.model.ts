@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { ModelType } from "./core.model";
 import User from "./user.model";
 
 export class Project {

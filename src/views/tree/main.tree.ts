@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
-import { ProjectTreeProvider } from "./project.tree";
-import { BoardTreeProvider } from "./board.tree";
-import StorageService from "../../services/storage.service";
-import { TaskTreeProvider } from "./task.tree";
-import TaskService from "../../services/task.service";
-import ImportanceLevelService from "../../services/importanceLevel.service";
-import StageService from "../../services/stage.service";
-import { Task, TaskTreeItem } from "../../models/task.model";
-import { MessageService } from "../../services/message.service";
-import { UserService } from "../../services/user.service";
 import { StageTreeItem } from "../../models/stage.model";
+import { TaskTreeItem } from "../../models/task.model";
+import ImportanceLevelService from "../../services/importanceLevel.service";
+import { MessageService } from "../../services/message.service";
+import StageService from "../../services/stage.service";
+import StorageService from "../../services/storage.service";
+import TaskService from "../../services/task.service";
+import { UserService } from "../../services/user.service";
+import { BoardTreeProvider } from "./board.tree";
+import { ProjectTreeProvider } from "./project.tree";
+import { TaskTreeProvider } from "./task.tree";
 
 class MainTree {
   projectTreeProvider: ProjectTreeProvider;

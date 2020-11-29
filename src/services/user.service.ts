@@ -21,6 +21,5 @@ export class UserService {
         );
         result.data as User;
         return StorageService.storeMe(result.data);
-
     }
 }
